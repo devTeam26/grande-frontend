@@ -1,0 +1,80 @@
+import type { PricingRule } from '../types';
+
+export const pricingRules: PricingRule[] = [
+  {
+    id: 'pr01',
+    name: 'Weekend Premium',
+    type: 'weekend',
+    multiplier: 1.30,
+    daysOfWeek: [4, 5], // Thu & Fri (Saudi weekend)
+    isActive: true,
+    appliesTo: 'all',
+  },
+  {
+    id: 'pr02',
+    name: 'Summer Peak',
+    type: 'seasonal',
+    multiplier: 1.50,
+    startDate: '2026-06-01',
+    endDate: '2026-08-31',
+    isActive: true,
+    appliesTo: 'all',
+  },
+  {
+    id: 'pr03',
+    name: 'National Day',
+    type: 'seasonal',
+    multiplier: 1.40,
+    startDate: '2026-09-20',
+    endDate: '2026-09-25',
+    isActive: true,
+    appliesTo: 'all',
+  },
+  {
+    id: 'pr04',
+    name: 'Eid Al-Fitr',
+    type: 'seasonal',
+    multiplier: 1.60,
+    startDate: '2026-03-28',
+    endDate: '2026-04-03',
+    isActive: true,
+    appliesTo: 'all',
+  },
+  {
+    id: 'pr05',
+    name: 'Eid Al-Adha',
+    type: 'seasonal',
+    multiplier: 1.60,
+    startDate: '2026-06-04',
+    endDate: '2026-06-10',
+    isActive: true,
+    appliesTo: 'all',
+  },
+  {
+    id: 'pr06',
+    name: 'High Demand Surcharge',
+    type: 'demand',
+    multiplier: 1.20,
+    minOccupancyPercent: 75,
+    isActive: false,
+    appliesTo: 'all',
+  },
+  {
+    id: 'pr07',
+    name: 'Last Minute Deal',
+    type: 'last_minute',
+    multiplier: 0.85,
+    isActive: false,
+    appliesTo: ['normal'],
+  },
+  {
+    id: 'pr08',
+    name: 'Early Bird VIP',
+    type: 'early_bird',
+    multiplier: 0.90,
+    isActive: true,
+    appliesTo: ['vip'],
+  },
+];
+
+export default pricingRules;
