@@ -26,7 +26,7 @@ export function AdminLayout() {
   const { user, isAuthenticated } = useAppSelector((s) => s.auth);
   const [collapsed, setCollapsed] = useState(false);
 
-  const isAdmin = user?.role === 'super_admin' || user?.role === 'manager' || user?.role === 'staff';
+  const isAdmin = user?.roles === 'super_admin' || user?.roles === 'manager' || user?.roles === 'staff';
 
   if (!isAuthenticated || !isAdmin) {
     return <Navigate to="/login" replace />;
@@ -118,7 +118,7 @@ export function AdminLayout() {
               </div>
               <div className="hidden sm:block">
                 <p className="text-sm font-medium text-gray-800">{user?.firstName} {user?.lastName}</p>
-                <p className="text-xs text-gray-500 capitalize">{user?.role.replace('_', ' ')}</p>
+                <p className="text-xs text-gray-500 capitalize">{user?.roles.replace('_', ' ')}</p>
               </div>
             </div>
           </div>

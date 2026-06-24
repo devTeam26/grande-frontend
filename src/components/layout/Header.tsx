@@ -21,7 +21,7 @@ export function Header() {
   const { language } = useAppSelector((s) => s.ui);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const isAdmin = user?.role === 'super_admin' || user?.role === 'manager' || user?.role === 'staff';
+  const isAdmin = user?.roles === 'super_admin' || user?.roles === 'manager' || user?.roles === 'staff';
 
   const handleLanguage = () => {
     const next = language === 'en' ? 'ar' : 'en';

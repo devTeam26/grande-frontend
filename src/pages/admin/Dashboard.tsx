@@ -56,7 +56,7 @@ export function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatCard label="Total Chalets" value={chalets.length} icon={<Home size={20} />} color="gold" />
         <StatCard label="Available Now" value={chalets.filter((c) => c.isAvailable).length} icon={<Home size={20} />} color="green" />
-        <StatCard label={t('admin.total_users')} value={users.filter((u) => u.role === 'user').length} icon={<Users size={20} />} color="navy" />
+        <StatCard label={t('admin.total_users')} value={users.filter((u) => u.roles === 'user').length} icon={<Users size={20} />} color="navy" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

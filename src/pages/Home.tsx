@@ -9,6 +9,43 @@ import { Button } from '../components/ui/Button';
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { setFilter } from '../store/slices/chaletsSlice';
 import type { ChaletType } from '../types';
+import p01 from '../assets/IMG_20260615_131431641_HDR.jpg';
+import p02 from '../assets/IMG_20260615_133901366_HDR_AE.jpg';
+import p03 from '../assets/IMG_20260615_134043284_HDR_AE.jpg';
+import p04 from '../assets/IMG_20260615_134713430_HDR_AE.jpg';
+import p15 from '../assets/IMG_20260615_142620294_AE.jpg';
+import p16 from '../assets/IMG_20260615_142701336_HDR_AE.jpg';
+import p17 from '../assets/IMG_20260615_142832737_HDR_AE.jpg';
+import p18 from '../assets/IMG_20260615_143435850_HDR_AE.jpg';
+import p19 from '../assets/IMG_20260615_143526917_HDR_AE.jpg';
+import p20 from '../assets/IMG_20260615_143756774_HDR_AE.jpg';
+import p21 from '../assets/IMG_20260615_143832117_AE.jpg';
+import p22 from '../assets/IMG_20260615_143906030_HDR_AE.jpg';
+import p23 from '../assets/IMG_20260615_144243981_HDR_AE.jpg';
+import p24 from '../assets/IMG_20260615_144605495_HDR_AE.jpg';
+import p25 from '../assets/IMG_20260615_144805928_HDR_AE.jpg';
+import p26 from '../assets/IMG_20260615_144819154_HDR_AE.jpg';
+import p27 from '../assets/_A1A7962.jpg';
+import p28 from '../assets/_A1A7988.jpg';
+import p29 from '../assets/_A1A7991.jpg';
+import p30 from '../assets/_A1A8001.jpg';
+import p31 from '../assets/_A1A8031.jpg';
+import p32 from '../assets/_A1A8041.jpg';
+import p33 from '../assets/_A1A8045.jpg';
+import p34 from '../assets/_A1A8046.jpg';
+import p35 from '../assets/_A1A8091.jpg';
+import p36 from '../assets/_A1A8102.jpg';
+import p37 from '../assets/_A1A8104.jpg';
+import p38 from '../assets/_A1A8112.jpg';
+import p39 from '../assets/_A1A8119.jpg';
+import p40 from '../assets/_A1A8124.jpg';
+import p41 from '../assets/_A1A8126.jpg';
+import p42 from '../assets/_A1A8167.jpg';
+import p43 from '../assets/1.jpg';
+import p44 from '../assets/2.jpg';
+import p45 from '../assets/5A1A8007.jpg';
+import p46 from '../assets/5A1A8022.jpg';
+import heroImg from '../assets/hero.png';
 
 type TabCard = {
   nameEn: string; nameAr: string;
@@ -26,12 +63,8 @@ const TAB_ITEMS: Record<'dining' | 'activities' | 'kuwait', TabCard[]> = {
       descAr: 'مشروبات منعشة ووجبات خفيفة بجانب المسبح.',
       detailEn: 'Unwind at our poolside bar where handcrafted cocktails, fresh juices and light bites are served throughout the day. Lounge on a sun chair, dip your feet in the water and let the Gulf breeze carry your worries away. Open daily 10 AM – 10 PM.',
       detailAr: 'استرخِ في بارنا بجانب المسبح حيث تُقدَّم الكوكتيلات المصنوعة يدوياً والعصائر الطازجة والوجبات الخفيفة طوال اليوم. مفتوح يومياً من 10 ص حتى 10 م.',
-      img: 'https://images.pexels.com/photos/260922/pexels-photo-260922.jpeg?auto=compress&cs=tinysrgb&w=600',
-      imgs: [
-        'https://images.pexels.com/photos/260922/pexels-photo-260922.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/2397274/pexels-photo-2397274.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/1484516/pexels-photo-1484516.jpeg?auto=compress&cs=tinysrgb&w=900',
-      ],
+      img: p15,
+      imgs: [p15, p16, p17],
     },
     {
       nameEn: 'Beach Café', nameAr: 'كافيه الشاطئ', mt: true,
@@ -39,12 +72,8 @@ const TAB_ITEMS: Record<'dining' | 'activities' | 'kuwait', TabCard[]> = {
       descAr: 'احتسِ قهوة صباحك مع إطلالة بانورامية على الخليج.',
       detailEn: 'Start your morning at the Beach Café with premium arabica coffee, fresh pastries and light breakfast options — all with a panoramic Arabian Gulf view. Whether you prefer a quiet corner or a beach-facing seat, every sip is a luxury. Open daily from 7 AM.',
       detailAr: 'ابدأ صباحك في كافيه الشاطئ مع قهوة عربية فاخرة ومعجنات طازجة وخيارات إفطار خفيفة مع إطلالة على الخليج. مفتوح يومياً من الساعة 7 صباحاً.',
-      img: 'https://images.pexels.com/photos/2074130/pexels-photo-2074130.jpeg?auto=compress&cs=tinysrgb&w=600',
-      imgs: [
-        'https://images.pexels.com/photos/2074130/pexels-photo-2074130.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/1855214/pexels-photo-1855214.jpeg?auto=compress&cs=tinysrgb&w=900',
-      ],
+      img: p18,
+      imgs: [p18, p19, p20],
     },
     {
       nameEn: 'Rooftop Dining', nameAr: 'طعام على السطح', mt: false,
@@ -52,12 +81,8 @@ const TAB_ITEMS: Record<'dining' | 'activities' | 'kuwait', TabCard[]> = {
       descAr: 'مأكولات راقية بإطلالة على الخليج عند الغروب.',
       detailEn: 'Dine under the stars at our signature rooftop restaurant, where international and Kuwaiti cuisine meets breathtaking Gulf views. A curated cocktail menu accompanies every dish. Reservations recommended. Open evenings 7 PM – midnight.',
       detailAr: 'تناول العشاء تحت النجوم في مطعمنا على السطح حيث تلتقي المطبخ الدولي والكويتي بإطلالات خلابة على الخليج. يُنصح بالحجز المسبق. مفتوح مساءً من 7 م حتى منتصف الليل.',
-      img: 'https://images.pexels.com/photos/941861/pexels-photo-941861.jpeg?auto=compress&cs=tinysrgb&w=600',
-      imgs: [
-        'https://images.pexels.com/photos/941861/pexels-photo-941861.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/262047/pexels-photo-262047.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/1581554/pexels-photo-1581554.jpeg?auto=compress&cs=tinysrgb&w=900',
-      ],
+      img: p21,
+      imgs: [p21, p22, p23],
     },
     {
       nameEn: 'Family BBQ', nameAr: 'شواء عائلي', mt: true,
@@ -65,12 +90,8 @@ const TAB_ITEMS: Record<'dining' | 'activities' | 'kuwait', TabCard[]> = {
       descAr: 'ليالي الشواء تجمع العائلات تحت سماء مفتوحة.',
       detailEn: 'Friday and Saturday evenings come alive with our family BBQ nights — fresh grills, mezze spreads and live Arabic music in a relaxed outdoor setting. A beloved Grande Beach tradition. From 6 PM every weekend.',
       detailAr: 'تحيا ليالي الجمعة والسبت مع ليالي الشواء العائلية — مشويات طازجة ومزة غنية وموسيقى عربية في أجواء خارجية مريحة. من الساعة 6 مساءً كل نهاية أسبوع.',
-      img: 'https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg?auto=compress&cs=tinysrgb&w=600',
-      imgs: [
-        'https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/533360/pexels-photo-533360.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/1580138/pexels-photo-1580138.jpeg?auto=compress&cs=tinysrgb&w=900',
-      ],
+      img: p24,
+      imgs: [p24, p25, p26],
     },
   ],
   activities: [
@@ -80,12 +101,8 @@ const TAB_ITEMS: Record<'dining' | 'activities' | 'kuwait', TabCard[]> = {
       descAr: 'مفتوح طوال العام، مدفأ لجميع الأعمار.',
       detailEn: 'Our resort pools are open 365 days a year, maintained at the perfect temperature year-round. Children\'s shallow sections, sun loungers and towel service are all included. Pool hours: 8 AM – 10 PM daily.',
       detailAr: 'مسابح منتجعنا مفتوحة 365 يوماً في السنة وتُحافَظ على درجة الحرارة المثالية. تشمل أقسام للأطفال وكراسي الشمس وخدمة المناشف. ساعات المسبح: 8 ص – 10 م يومياً.',
-      img: 'https://images.pexels.com/photos/261101/pexels-photo-261101.jpeg?auto=compress&cs=tinysrgb&w=600',
-      imgs: [
-        'https://images.pexels.com/photos/261101/pexels-photo-261101.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/1179018/pexels-photo-1179018.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/2440021/pexels-photo-2440021.jpeg?auto=compress&cs=tinysrgb&w=900',
-      ],
+      img: p27,
+      imgs: [p27, p28, p29],
     },
     {
       nameEn: 'Beach Volleyball', nameAr: 'كرة الشاطئ', mt: true,
@@ -93,12 +110,8 @@ const TAB_ITEMS: Record<'dining' | 'activities' | 'kuwait', TabCard[]> = {
       descAr: 'مباريات ودية على ملاعب رمل نظيفة على الشاطئ.',
       detailEn: 'Challenge friends and family to a match on our dedicated beachfront volleyball courts. Equipment is available free of charge at the activities desk. Organised tournaments are held every Friday morning — all skill levels welcome.',
       detailAr: 'تحدَّ أصدقاءك وعائلتك في ملاعب كرة الشاطئ المخصصة على الواجهة البحرية. المعدات متاحة مجاناً من مكتب الأنشطة. تُقام بطولات كل جمعة صباحاً لجميع المستويات.',
-      img: 'https://images.pexels.com/photos/1618200/pexels-photo-1618200.jpeg?auto=compress&cs=tinysrgb&w=600',
-      imgs: [
-        'https://images.pexels.com/photos/1618200/pexels-photo-1618200.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/1181743/pexels-photo-1181743.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/1003268/pexels-photo-1003268.jpeg?auto=compress&cs=tinysrgb&w=900',
-      ],
+      img: p30,
+      imgs: [p30, p31, p32],
     },
     {
       nameEn: 'Water Sports', nameAr: 'رياضات مائية', mt: false,
@@ -106,12 +119,8 @@ const TAB_ITEMS: Record<'dining' | 'activities' | 'kuwait', TabCard[]> = {
       descAr: 'تزلج مائي وكياك في مياه الخليج العربي الدافئة.',
       detailEn: 'Ride the waves of the Arabian Gulf with our range of water sports — from jet skis to kayaks and stand-up paddleboards. Certified instructors are available for beginners. Equipment rental charged per hour from the beach hut.',
       detailAr: 'ركب أمواج الخليج العربي مع مجموعتنا من الرياضات المائية — من الجت سكي إلى الكياك وألواح التجديف. مدربون معتمدون للمبتدئين. التأجير بالساعة من كوخ الشاطئ.',
-      img: 'https://images.pexels.com/photos/1654693/pexels-photo-1654693.jpeg?auto=compress&cs=tinysrgb&w=600',
-      imgs: [
-        'https://images.pexels.com/photos/1654693/pexels-photo-1654693.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/1076097/pexels-photo-1076097.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/2547565/pexels-photo-2547565.jpeg?auto=compress&cs=tinysrgb&w=900',
-      ],
+      img: p33,
+      imgs: [p33, p34, p35],
     },
     {
       nameEn: 'Fitness Centre', nameAr: 'مركز اللياقة', mt: true,
@@ -119,12 +128,8 @@ const TAB_ITEMS: Record<'dining' | 'activities' | 'kuwait', TabCard[]> = {
       descAr: 'صالة رياضية متكاملة بإطلالة على البحر.',
       detailEn: 'Stay in peak condition at our fully equipped fitness centre featuring state-of-the-art cardio machines, free weights and resistance equipment — all with panoramic sea views. Personal training sessions available on request. Open 6 AM – 11 PM daily.',
       detailAr: 'ابقَ في أفضل حالاتك في مركز اللياقة المجهز بالكامل بأحدث أجهزة الكارديو والأثقال الحرة ومعدات المقاومة مع إطلالات بحرية. جلسات التدريب الشخصي متاحة عند الطلب. مفتوح 6 ص – 11 م يومياً.',
-      img: 'https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=600',
-      imgs: [
-        'https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/3076516/pexels-photo-3076516.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/1954524/pexels-photo-1954524.jpeg?auto=compress&cs=tinysrgb&w=900',
-      ],
+      img: p36,
+      imgs: [p36, p37, p38],
     },
   ],
   kuwait: [
@@ -134,12 +139,8 @@ const TAB_ITEMS: Record<'dining' | 'activities' | 'kuwait', TabCard[]> = {
       descAr: 'الرمز الشهير لكويت الحديثة يرتفع فوق ساحل الخليج.',
       detailEn: 'Rising majestically above Kuwait Bay, the Kuwait Towers are the most recognisable landmark in the country. The main tower houses a revolving observation deck and restaurant offering 360° views of the city and the Gulf. Just 88 km from Grande Beach Khairan.',
       detailAr: 'ترتفع أبراج الكويت بشموخ فوق خليج الكويت وهي المعلم الأكثر شهرة في البلاد. تضم البرج الرئيسي منصة مراقبة دوارة ومطعماً يوفر إطلالات 360 درجة على المدينة والخليج. على بُعد 88 كم من غراند بيتش خيران.',
-      img: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=600',
-      imgs: [
-        'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/3694733/pexels-photo-3694733.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/2161467/pexels-photo-2161467.jpeg?auto=compress&cs=tinysrgb&w=900',
-      ],
+      img: p39,
+      imgs: [p39, p40, p41],
     },
     {
       nameEn: 'Scientific Center', nameAr: 'المركز العلمي', mt: true,
@@ -147,12 +148,8 @@ const TAB_ITEMS: Record<'dining' | 'activities' | 'kuwait', TabCard[]> = {
       descAr: 'أكبر أكواريوم في الشرق الأوسط وتجربة IMAX عالمية.',
       detailEn: "Kuwait's Scientific Center is home to the largest aquarium in the Middle East, a natural history museum and an IMAX theatre. Discover marine life from the Arabian Gulf up close. Open Sun–Thu 9 AM–9 PM, Fri–Sat 2–10 PM.",
       detailAr: 'يضم المركز العلمي الكويتي أكبر أكواريوم في الشرق الأوسط ومتحفاً للتاريخ الطبيعي ومسرح IMAX. مفتوح أحد–خميس 9 ص–9 م، جمعة–سبت 2–10 م.',
-      img: 'https://images.pexels.com/photos/1298601/pexels-photo-1298601.jpeg?auto=compress&cs=tinysrgb&w=600',
-      imgs: [
-        'https://images.pexels.com/photos/1298601/pexels-photo-1298601.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/2280547/pexels-photo-2280547.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/3156482/pexels-photo-3156482.jpeg?auto=compress&cs=tinysrgb&w=900',
-      ],
+      img: p42,
+      imgs: [p42, p43, p44],
     },
     {
       nameEn: 'Al Mubarakiya Souq', nameAr: 'سوق المباركية', mt: false,
@@ -160,12 +157,8 @@ const TAB_ITEMS: Record<'dining' | 'activities' | 'kuwait', TabCard[]> = {
       descAr: 'أقدم أسواق الكويت، يزخر بالتوابل والحرف والموروث الأصيل.',
       detailEn: "Al Mubarakiya is Kuwait City's oldest market, dating back over a century. Wander through alleys lined with spice sellers, traditional jewellery, handwoven textiles, dates and local sweets. Open 8 AM–1 PM and 4–10 PM.",
       detailAr: 'سوق المباركية هو أقدم وأعرق أسواق الكويت. تجول في أزقته المليئة بالتوابل والمجوهرات التقليدية والأقمشة المنسوجة يدوياً والحلويات المحلية. مفتوح 8 ص–1 م و4–10 م.',
-      img: 'https://images.pexels.com/photos/1040881/pexels-photo-1040881.jpeg?auto=compress&cs=tinysrgb&w=600',
-      imgs: [
-        'https://images.pexels.com/photos/1040881/pexels-photo-1040881.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/2519844/pexels-photo-2519844.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/4449068/pexels-photo-4449068.jpeg?auto=compress&cs=tinysrgb&w=900',
-      ],
+      img: p45,
+      imgs: [p45, p46, p01],
     },
     {
       nameEn: 'Al Kout Mall', nameAr: 'مول الكوت', mt: true,
@@ -173,12 +166,8 @@ const TAB_ITEMS: Record<'dining' | 'activities' | 'kuwait', TabCard[]> = {
       descAr: 'تسوق وطعام على الواجهة البحرية على بُعد 20 دقيقة فقط.',
       detailEn: "Al Kout Mall is one of Kuwait's premier waterfront shopping destinations, featuring over 200 retail stores, a multiplex cinema, and a marina-side promenade lined with international restaurants. Located in Fahaheel, just 20 minutes from Grande Beach.",
       detailAr: 'مول الكوت هو أحد أبرز وجهات التسوق على الواجهة البحرية في الكويت، ويضم أكثر من 200 متجر وسينما متعددة القاعات وكورنيش المارينا. يقع في الفحيحيل على بُعد 20 دقيقة من غراند بيتش.',
-      img: 'https://images.pexels.com/photos/1995842/pexels-photo-1995842.jpeg?auto=compress&cs=tinysrgb&w=600',
-      imgs: [
-        'https://images.pexels.com/photos/1995842/pexels-photo-1995842.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/1995842/pexels-photo-1995842.jpeg?auto=compress&cs=tinysrgb&w=900',
-        'https://images.pexels.com/photos/1995842/pexels-photo-1995842.jpeg?auto=compress&cs=tinysrgb&w=900',
-      ],
+      img: p02,
+      imgs: [p02, p03, p04],
     },
   ],
 };
@@ -267,7 +256,7 @@ export function Home() {
         <video
           className="absolute inset-0 h-full w-full object-cover"
           src="/IMG_7006.MP4"
-          poster="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1600&q=80"
+          poster={heroImg}
           autoPlay
           muted
           loop
@@ -718,7 +707,7 @@ export function Home() {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url('https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=1600')",
+            backgroundImage: `url('${p46}')`,
             backgroundAttachment: 'fixed',
           }}
         />
@@ -774,21 +763,21 @@ export function Home() {
         <div className="grid grid-cols-1 md:grid-cols-3">
           {([
             {
-              img: 'https://images.pexels.com/photos/1174732/pexels-photo-1174732.jpeg?auto=compress&cs=tinysrgb&w=800',
+              img: p43,
               titleEn: 'Private Beach',   titleAr: 'شاطئ خاص',
               descEn: 'Your own slice of paradise. Soft sands, crystalline Gulf waters and uninterrupted horizon views — exclusively for Grande Beach guests.',
               descAr: 'قطعتك الخاصة من الجنة. رمال ناعمة ومياه خليجية صافية وأفق لا نهاية له — حصرياً لضيوف غراند بيتش.',
               emoji: '🏖',
             },
             {
-              img: 'https://images.pexels.com/photos/2048865/pexels-photo-2048865.jpeg?auto=compress&cs=tinysrgb&w=800',
+              img: p44,
               titleEn: 'Luxury Chalets',  titleAr: 'شاليهات فاخرة',
               descEn: 'From intimate Standard units to palatial VIP villas, each chalet blends Kuwaiti elegance with modern comfort.',
               descAr: 'من الوحدات القياسية إلى فيلات VIP، كل شاليه يجمع بين الأناقة الكويتية والراحة الحديثة.',
               emoji: '🏡',
             },
             {
-              img: 'https://images.pexels.com/photos/635279/pexels-photo-635279.jpeg?auto=compress&cs=tinysrgb&w=800',
+              img: p45,
               titleEn: 'Khairan Sunsets', titleAr: 'غروب خيران',
               descEn: 'Golden hues melt into the Arabian Gulf every evening at Khairan — a spectacle that never grows old.',
               descAr: 'الألوان الذهبية تذوب في الخليج العربي كل مساء في خيران — مشهد لا يُمل أبداً.',
@@ -1039,7 +1028,7 @@ export function Home() {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url('https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg?auto=compress&cs=tinysrgb&w=1600')",
+            backgroundImage: `url('${p46}')`,
             backgroundAttachment: 'fixed',
           }}
         />

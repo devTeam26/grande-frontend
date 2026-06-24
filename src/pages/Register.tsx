@@ -6,10 +6,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { useAppSelector } from '../hooks/useAppSelector';
-import { loginSuccess, clearError } from '../store/slices/authSlice';
+// ── registerWithAPI replaces the old fake loginSuccess call ─────────────────
+import { registerWithAPI, clearError } from '../store/slices/authSlice';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
-import type { User } from '../types';
 
 const registerSchema = z.object({
   firstName: z.string().min(2),
@@ -23,10 +23,11 @@ const registerSchema = z.object({
 type RegisterForm = z.infer<typeof registerSchema>;
 
 export function Register() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { isAuthenticated, isLoading } = useAppSelector((s) => s.auth);
+  // error is now shown to the user — comes from the API response
+  const { isAuthenticated, isLoading, error } = useAppSelector((s) => s.auth);
 
   const { register, handleSubmit, formState: { errors } } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
@@ -38,22 +39,19 @@ export function Register() {
   }, [isAuthenticated, navigate, dispatch]);
 
   function onSubmit(data: RegisterForm) {
-    const newUser: User = {
-      id: `u_${Date.now()}`,
-      email: data.email,
+    // ── REAL API CALL ────────────────────────────────────────────────────────
+    // Sends exactly the fields the backend expects.
+    // phone (form field) → phoneNumber (API field name)
+    // preferredLanguage is taken from the current active UI language
+    dispatch(registerWithAPI({
       firstName: data.firstName,
       lastName: data.lastName,
-      phone: data.phone,
-      role: 'user',
-      loyaltyPoints: 0,
-      loyaltyTier: 'bronze',
-      totalSpent: 0,
-      bookingsCount: 0,
-      createdAt: new Date().toISOString(),
-      preferences: { language: 'en', notifications: { email: true, whatsapp: false, sms: false } },
-      isActive: true,
-    };
-    dispatch(loginSuccess(newUser));
+      email: data.email,
+      password: data.password,
+      phoneNumber: data.phone,          // form uses "phone", API expects "phoneNumber"
+      preferredLanguage: i18n.language, // "en" or "ar" — matches current UI language
+      // confirmPassword is NOT sent — it is UI-only validation, not an API field
+    }));
   }
 
   return (
@@ -77,6 +75,10 @@ export function Register() {
             <Input label={t('auth.phone')} type="tel" {...register('phone')} error={errors.phone?.message} />
             <Input label={t('auth.password')} type="password" {...register('password')} error={errors.password?.message} />
             <Input label={t('auth.confirm_password')} type="password" {...register('confirmPassword')} error={errors.confirmPassword?.message} />
+            {/* Shows error message returned by the API (e.g. "Email already exists") */}
+            {error && (
+              <p className="text-sm text-red-500 text-center rounded-lg bg-red-50 py-2 px-3">{error}</p>
+            )}
             <Button type="submit" fullWidth size="lg" isLoading={isLoading}>{t('auth.register_btn')}</Button>
           </form>
 

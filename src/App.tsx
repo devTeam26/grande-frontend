@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useAppSelector } from './hooks/useAppSelector';
 import { Toaster } from 'react-hot-toast';
 import AOS from "aos";
 import 'aos/dist/aos.css';
@@ -25,6 +26,17 @@ import { Contact } from './pages/Contact';
 import { Reviews } from './pages/Reviews';
 import { NotFound } from './pages/NotFound';
 
+// Redirects unauthenticated users (including guests) to /login.
+// Saves the page they tried to visit so Login can send them back after success.
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAppSelector((s) => s.auth);
+  const location = useLocation();
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+  }
+  return <>{children}</>;
+}
+
 function AppRouter() {
   const location = useLocation();
 
@@ -49,12 +61,12 @@ function AppRouter() {
         <Route path="/" element={<Home />} />
         <Route path="/chalets" element={<Chalets />} />
         <Route path="/chalets/:id" element={<ChaletDetail />} />
-        <Route path="/booking/:chaletId" element={<Booking />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/confirmation/:bookingId" element={<Confirmation />} />
+        <Route path="/booking/:chaletId" element={<ProtectedRoute><Booking /></ProtectedRoute>} />
+        <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+        <Route path="/confirmation/:bookingId" element={<ProtectedRoute><Confirmation /></ProtectedRoute>} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/brands" element={<Brands />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/reviews" element={<Reviews />} />

@@ -21,7 +21,7 @@ export function ManageUsers() {
   const { user: currentUser } = useAppSelector((s) => s.auth);
 
   const [showAdd, setShowAdd] = useState(false);
-  const [newUser, setNewUser] = useState({ firstName: '', lastName: '', email: '', phone: '', role: 'staff' as UserRole });
+  const [newUser, setNewUser] = useState({ firstName: '', lastName: '', email: '', phoneNumber: '', roles: 'staff' as UserRole });
 
   const roleColors = { super_admin: 'red', manager: 'gold', staff: 'navy', user: 'gray' } as const;
 
@@ -29,7 +29,11 @@ export function ManageUsers() {
     if (!newUser.firstName || !newUser.email) { toast.error('Fill required fields'); return; }
     const u: User = {
       id: `u_${Date.now()}`,
-      ...newUser,
+      firstName: newUser.firstName,
+      lastName: newUser.lastName,
+      email: newUser.email,
+      phoneNumber: newUser.phoneNumber,
+      roles: newUser.roles,
       loyaltyPoints: 0,
       loyaltyTier: 'bronze',
       totalSpent: 0,
@@ -40,13 +44,13 @@ export function ManageUsers() {
     };
     dispatch(addUser(u));
     setShowAdd(false);
-    setNewUser({ firstName: '', lastName: '', email: '', phone: '', role: 'staff' });
+    setNewUser({ firstName: '', lastName: '', email: '', phoneNumber: '', roles: 'staff' });
     toast.success('User added');
   }
 
   return (
     <div className="space-y-4">
-      {currentUser?.role === 'super_admin' && (
+      {currentUser?.roles === 'super_admin' && (
         <div className="flex justify-end">
           <Button onClick={() => setShowAdd(true)} className="gap-2">
             <Plus size={16} /> Add Staff User
@@ -80,8 +84,8 @@ export function ManageUsers() {
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <Badge variant={roleColors[u.role] ?? 'gray'} size="sm">
-                      {u.role.replace('_', ' ')}
+                    <Badge variant={roleColors[u.roles] ?? 'gray'} size="sm">
+                      {u.roles.replace('_', ' ')}
                     </Badge>
                   </td>
                   <td className="px-4 py-3">
@@ -118,17 +122,17 @@ export function ManageUsers() {
             <Input label="Last Name" value={newUser.lastName} onChange={(e) => setNewUser((p) => ({ ...p, lastName: e.target.value }))} />
           </div>
           <Input label="Email" type="email" value={newUser.email} onChange={(e) => setNewUser((p) => ({ ...p, email: e.target.value }))} />
-          <Input label="Phone" value={newUser.phone} onChange={(e) => setNewUser((p) => ({ ...p, phone: e.target.value }))} />
+          <Input label="Phone" value={newUser.phoneNumber} onChange={(e) => setNewUser((p) => ({ ...p, phoneNumber: e.target.value }))} />
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-gray-700">Role</label>
             <select
-              value={newUser.role}
-              onChange={(e) => setNewUser((p) => ({ ...p, role: e.target.value as UserRole }))}
+              value={newUser.roles}
+              onChange={(e) => setNewUser((p) => ({ ...p, roles: e.target.value as UserRole }))}
               className="rounded-xl border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400"
             >
               <option value="staff">Staff (view bookings only)</option>
               <option value="manager">Manager (bookings + reports)</option>
-              {currentUser?.role === 'super_admin' && <option value="super_admin">Super Admin</option>}
+              {currentUser?.roles === 'super_admin' && <option value="super_admin">Super Admin</option>}
             </select>
           </div>
           <div className="flex gap-2 justify-end">

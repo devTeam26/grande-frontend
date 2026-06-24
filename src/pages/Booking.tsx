@@ -59,7 +59,7 @@ export function Booking() {
       firstName: user?.firstName ?? '',
       lastName: user?.lastName ?? '',
       email: user?.email ?? '',
-      phone: user?.phone ?? '',
+      phone: user?.phoneNumber ?? '',
     },
   });
 
@@ -80,7 +80,7 @@ export function Booking() {
       setValue('firstName', user.firstName);
       setValue('lastName', user.lastName);
       setValue('email', user.email);
-      setValue('phone', user.phone);
+      setValue('phone', user.phoneNumber);
     }
   }, [isAuthenticated, user, setValue]);
 

@@ -137,8 +137,8 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  phone: string;
-  role: UserRole;
+  phoneNumber: string;
+  roles: UserRole;
   loyaltyPoints: number;
   loyaltyTier: LoyaltyTier;
   totalSpent: number;

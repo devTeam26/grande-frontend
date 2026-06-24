@@ -1,6 +1,50 @@
+import p01 from '../assets/IMG_20260615_131431641_HDR.jpg';
+import p02 from '../assets/IMG_20260615_133901366_HDR_AE.jpg';
+import p03 from '../assets/IMG_20260615_134043284_HDR_AE.jpg';
+import p04 from '../assets/IMG_20260615_134713430_HDR_AE.jpg';
+import p05 from '../assets/IMG_20260615_134736296_HDR_AE.jpg';
+import p06 from '../assets/IMG_20260615_134830697_HDR_AE.jpg';
+import p07 from '../assets/IMG_20260615_134838251_HDR_AE.jpg';
+import p08 from '../assets/IMG_20260615_140302440_HDR_AE.jpg';
+import p09 from '../assets/IMG_20260615_140351513_HDR_AE.jpg';
+import p10 from '../assets/IMG_20260615_140506680_HDR_AE.jpg';
+import p11 from '../assets/IMG_20260615_141907855_HDR_AE.jpg';
+import p12 from '../assets/IMG_20260615_142034414_HDR_AE.jpg';
+import p13 from '../assets/IMG_20260615_142513190_HDR_AE.jpg';
+import p14 from '../assets/IMG_20260615_142613388_AEee.jpg';
+import p15 from '../assets/IMG_20260615_142620294_AE.jpg';
+import p16 from '../assets/IMG_20260615_142701336_HDR_AE.jpg';
+import p17 from '../assets/IMG_20260615_142832737_HDR_AE.jpg';
+import p18 from '../assets/IMG_20260615_143435850_HDR_AE.jpg';
+import p19 from '../assets/IMG_20260615_143526917_HDR_AE.jpg';
+import p20 from '../assets/IMG_20260615_143756774_HDR_AE.jpg';
+import p21 from '../assets/IMG_20260615_143832117_AE.jpg';
+import p22 from '../assets/IMG_20260615_143906030_HDR_AE.jpg';
+import p23 from '../assets/IMG_20260615_144243981_HDR_AE.jpg';
+import p24 from '../assets/IMG_20260615_144605495_HDR_AE.jpg';
+import p25 from '../assets/IMG_20260615_144805928_HDR_AE.jpg';
+import p26 from '../assets/IMG_20260615_144819154_HDR_AE.jpg';
+import p27 from '../assets/_A1A7962.jpg';
+import p28 from '../assets/_A1A7988.jpg';
+import p29 from '../assets/_A1A7991.jpg';
+import p30 from '../assets/_A1A8001.jpg';
+import p31 from '../assets/_A1A8031.jpg';
+import p32 from '../assets/_A1A8041.jpg';
+import p33 from '../assets/_A1A8045.jpg';
+import p34 from '../assets/_A1A8046.jpg';
+import p35 from '../assets/_A1A8091.jpg';
+import p36 from '../assets/_A1A8102.jpg';
+import p37 from '../assets/_A1A8104.jpg';
+import p38 from '../assets/_A1A8112.jpg';
+import p39 from '../assets/_A1A8119.jpg';
+import p40 from '../assets/_A1A8124.jpg';
+import p41 from '../assets/_A1A8126.jpg';
+import p42 from '../assets/_A1A8167.jpg';
+import p43 from '../assets/1.jpg';
+import p44 from '../assets/2.jpg';
+import p45 from '../assets/5A1A8007.jpg';
+import p46 from '../assets/5A1A8022.jpg';
 import type { Chalet } from '../types';
-
-const BASE = 'https://images.pexels.com/photos/';
 
 export const chalets: Chalet[] = [
   // ─── NORMAL (4) ───────────────────────────────────────────────
@@ -13,14 +57,7 @@ export const chalets: Chalet[] = [
     },
     type: 'normal',
     basePrice: 350,
-    images: [
-      `${BASE}34763215/pexels-photo-34763215.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}33636637/pexels-photo-33636637.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}34496702/pexels-photo-34496702.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}36916378/pexels-photo-36916378.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}35172686/pexels-photo-35172686.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}33400871/pexels-photo-33400871.jpeg?auto=compress&cs=tinysrgb&w=900`,
-    ],
+    images: [p01, p02, p03, p04, p05, p06],
     bedrooms: [
       { type: 'master', beds: 1, hasEnsuite: true },
       { type: 'master', beds: 1, hasEnsuite: true },
@@ -55,14 +92,7 @@ export const chalets: Chalet[] = [
     },
     type: 'normal',
     basePrice: 350,
-    images: [
-      `${BASE}36916378/pexels-photo-36916378.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}30898458/pexels-photo-30898458.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}32021575/pexels-photo-32021575.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}34763215/pexels-photo-34763215.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}34618647/pexels-photo-34618647.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}33915746/pexels-photo-33915746.jpeg?auto=compress&cs=tinysrgb&w=900`,
-    ],
+    images: [p07, p08, p09, p10, p11, p12],
     bedrooms: [
       { type: 'master', beds: 1, hasEnsuite: true },
       { type: 'master', beds: 1, hasEnsuite: true },
@@ -97,14 +127,7 @@ export const chalets: Chalet[] = [
     },
     type: 'normal',
     basePrice: 350,
-    images: [
-      `${BASE}36852532/pexels-photo-36852532.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}36852544/pexels-photo-36852544.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}34496701/pexels-photo-34496701.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}35857672/pexels-photo-35857672.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}36767624/pexels-photo-36767624.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}36816426/pexels-photo-36816426.jpeg?auto=compress&cs=tinysrgb&w=900`,
-    ],
+    images: [p13, p14, p15, p16, p17, p18],
     bedrooms: [
       { type: 'master', beds: 1, hasEnsuite: true },
       { type: 'master', beds: 1, hasEnsuite: true },
@@ -137,14 +160,7 @@ export const chalets: Chalet[] = [
     },
     type: 'normal',
     basePrice: 350,
-    images: [
-      `${BASE}35857672/pexels-photo-35857672.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}34618647/pexels-photo-34618647.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}36486494/pexels-photo-36486494.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}33636637/pexels-photo-33636637.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}36852532/pexels-photo-36852532.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}34790702/pexels-photo-34790702.jpeg?auto=compress&cs=tinysrgb&w=900`,
-    ],
+    images: [p19, p20, p21, p22, p23, p24],
     bedrooms: [
       { type: 'master', beds: 1, hasEnsuite: true },
       { type: 'master', beds: 1, hasEnsuite: true },
@@ -179,14 +195,7 @@ export const chalets: Chalet[] = [
     },
     type: 'superior',
     basePrice: 500,
-    images: [
-      `${BASE}36767624/pexels-photo-36767624.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}34790702/pexels-photo-34790702.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}33125906/pexels-photo-33125906.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}33400871/pexels-photo-33400871.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}36916378/pexels-photo-36916378.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}34763215/pexels-photo-34763215.jpeg?auto=compress&cs=tinysrgb&w=900`,
-    ],
+    images: [p25, p26, p27, p28, p29, p30],
     bedrooms: [
       { type: 'master', beds: 1, hasEnsuite: true },
       { type: 'master', beds: 1, hasEnsuite: true },
@@ -221,14 +230,7 @@ export const chalets: Chalet[] = [
     },
     type: 'superior',
     basePrice: 500,
-    images: [
-      `${BASE}33400871/pexels-photo-33400871.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}36816426/pexels-photo-36816426.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}29000012/pexels-photo-29000012.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}36767624/pexels-photo-36767624.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}35172686/pexels-photo-35172686.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}34618647/pexels-photo-34618647.jpeg?auto=compress&cs=tinysrgb&w=900`,
-    ],
+    images: [p31, p32, p33, p34, p35, p36],
     bedrooms: [
       { type: 'master', beds: 1, hasEnsuite: true },
       { type: 'master', beds: 1, hasEnsuite: true },
@@ -263,14 +265,7 @@ export const chalets: Chalet[] = [
     },
     type: 'superior',
     basePrice: 500,
-    images: [
-      `${BASE}34618647/pexels-photo-34618647.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}28962539/pexels-photo-28962539.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}34559240/pexels-photo-34559240.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}36916378/pexels-photo-36916378.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}33400871/pexels-photo-33400871.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}36816426/pexels-photo-36816426.jpeg?auto=compress&cs=tinysrgb&w=900`,
-    ],
+    images: [p37, p38, p39, p40, p41, p42],
     bedrooms: [
       { type: 'master', beds: 1, hasEnsuite: true },
       { type: 'master', beds: 1, hasEnsuite: true },
@@ -304,14 +299,7 @@ export const chalets: Chalet[] = [
     },
     type: 'superior',
     basePrice: 500,
-    images: [
-      `${BASE}35172686/pexels-photo-35172686.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}28238364/pexels-photo-28238364.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}33915746/pexels-photo-33915746.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}36767624/pexels-photo-36767624.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}34790702/pexels-photo-34790702.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}33400871/pexels-photo-33400871.jpeg?auto=compress&cs=tinysrgb&w=900`,
-    ],
+    images: [p43, p44, p45, p46, p01, p02],
     bedrooms: [
       { type: 'master', beds: 1, hasEnsuite: true },
       { type: 'master', beds: 1, hasEnsuite: true },
@@ -348,14 +336,7 @@ export const chalets: Chalet[] = [
     },
     type: 'vip',
     basePrice: 750,
-    images: [
-      `${BASE}29000012/pexels-photo-29000012.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}11436776/pexels-photo-11436776.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}36852535/pexels-photo-36852535.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}34763215/pexels-photo-34763215.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}35172686/pexels-photo-35172686.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}36816426/pexels-photo-36816426.jpeg?auto=compress&cs=tinysrgb&w=900`,
-    ],
+    images: [p03, p04, p05, p06, p07, p08],
     bedrooms: [
       { type: 'master', beds: 1, hasEnsuite: true },
       { type: 'master', beds: 1, hasEnsuite: true },
@@ -390,14 +371,7 @@ export const chalets: Chalet[] = [
     },
     type: 'vip',
     basePrice: 750,
-    images: [
-      `${BASE}33400871/pexels-photo-33400871.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}36916378/pexels-photo-36916378.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}29000012/pexels-photo-29000012.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}34790702/pexels-photo-34790702.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}35172686/pexels-photo-35172686.jpeg?auto=compress&cs=tinysrgb&w=900`,
-      `${BASE}36767624/pexels-photo-36767624.jpeg?auto=compress&cs=tinysrgb&w=900`,
-    ],
+    images: [p09, p10, p11, p12, p13, p14],
     bedrooms: [
       { type: 'master', beds: 1, hasEnsuite: true },
       { type: 'master', beds: 1, hasEnsuite: true },

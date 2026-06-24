@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { useAppSelector } from '../hooks/useAppSelector';
-import { loginWithCredentials, clearError, continueAsGuest } from '../store/slices/authSlice';
+import { loginWithAPI, clearError, continueAsGuest } from '../store/slices/authSlice';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 
@@ -20,19 +20,24 @@ export function Login() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated, isLoading, error } = useAppSelector((s) => s.auth);
+
+  // If the user was redirected here from a protected page, go back there after login.
+  // Otherwise fall back to the home page.
+  const from = (location.state as { from?: string })?.from ?? '/';
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
   });
 
   useEffect(() => {
-    if (isAuthenticated) navigate('/');
+    if (isAuthenticated) navigate(from, { replace: true });
     return () => { dispatch(clearError()); };
-  }, [isAuthenticated, navigate, dispatch]);
+  }, [isAuthenticated, navigate, dispatch, from]);
 
   function onSubmit(data: LoginForm) {
-    dispatch(loginWithCredentials(data.email, data.password) as unknown as Parameters<typeof dispatch>[0]);
+    dispatch(loginWithAPI({email:data.email, password:data.password}) as unknown as Parameters<typeof dispatch>[0]);
   }
 
   return (
@@ -88,14 +93,6 @@ export function Login() {
           >
             {t('auth.guest_btn')}
           </Button>
-
-          {/* Demo credentials */}
-          <div className="mt-4 p-3 bg-gray-50 rounded-xl text-xs text-gray-500">
-            <p className="font-medium text-gray-700 mb-1">Demo accounts:</p>
-            <p>Admin: admin@alfakhama.com / admin123</p>
-            <p>User: khalid@example.com / user123</p>
-            <p>Manager: manager@alfakhama.com / mang123</p>
-          </div>
         </div>
 
         <p className="text-center text-sm text-gray-500 mt-5">
