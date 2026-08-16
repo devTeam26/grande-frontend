@@ -25,6 +25,7 @@ const Contact          = lazy(() => import('./pages/Contact').then(m => ({ defau
 const Reviews          = lazy(() => import('./pages/Reviews').then(m => ({ default: m.Reviews })));
 const ForgotPassword   = lazy(() => import('./pages/ForgotPassword').then(m => ({ default: m.ForgotPassword })));
 const ResetPassword    = lazy(() => import('./pages/ResetPassword').then(m => ({ default: m.ResetPassword })));
+const PrivacyPolicy    = lazy(() => import('./pages/PrivacyPolicy').then(m => ({ default: m.PrivacyPolicy })));
 const NotFound         = lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
 
 const AdminDashboard   = lazy(() => import('./pages/admin/Dashboard').then(m => ({ default: m.AdminDashboard })));
@@ -99,6 +100,7 @@ function AppRouter() {
         <Route path="/brands" element={<Brands />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/reviews" element={<Reviews />} />
+        <Route path="/privacypolicy" element={<PrivacyPolicy />} />
         <Route path="*" element={<NotFound />} />
       </Route>
 

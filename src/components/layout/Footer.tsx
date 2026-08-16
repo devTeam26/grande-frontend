@@ -98,6 +98,10 @@ export function Footer() {
             {isAr ? `© ${year} غراند بيتش خيران الكويت. جميع الحقوق محفوظة.` : `© ${year} GrandeBeach Khairan Kuwait. All rights reserved.`}
           </p>
           <div className="flex items-center gap-4 text-xs text-navy-400">
+            <Link to="/privacypolicy" className="hover:text-gold-400 transition-colors">
+              {isAr ? 'سياسة الخصوصية' : 'Privacy Policy'}
+            </Link>
+            <span className="text-navy-700">|</span>
             <span>{isAr ? 'مدفوعات آمنة بواسطة Tap | Deema | Taly' : 'Secure payments by Tap | Deema | Taly'}</span>
           </div>
         </div>
