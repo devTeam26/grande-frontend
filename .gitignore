@@ -3,3 +3,4 @@ dist/
 grande-frontend/
 .DS_Store
 *.local
+.claude/
