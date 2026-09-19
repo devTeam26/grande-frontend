@@ -11,7 +11,7 @@ import { useAppDispatch } from '../hooks/useAppDispatch';
 import { setFilter, fetchChalets } from '../store/slices/chaletsSlice';
 import { localImagesForChalet } from '../data/chaletImages';
 import type { ChaletType } from '../types';
-import { loadFacilityStore } from './admin/ManageFacilities';
+import { getAllFacilityPhotos, type FacilityStore } from './admin/ManageFacilities';
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL as string) ?? '';
 
@@ -315,14 +315,14 @@ export function Home() {
   }
   const slides = chalets.slice(0, 6);
 
-  const facilityAreas = (() => {
-    const stored = loadFacilityStore();
-    return FACILITY_AREAS.map((area) => {
-      const photos = stored[area.key as keyof typeof stored].filter(Boolean);
-      if (!photos.length) return area;
-      return { ...area, img: photos[0], imgs: photos };
-    });
-  })();
+  const [facilityStore, setFacilityStore] = useState<FacilityStore | null>(null);
+  useEffect(() => { getAllFacilityPhotos().then(setFacilityStore).catch(() => {}); }, []);
+
+  const facilityAreas = FACILITY_AREAS.map((area) => {
+    const photos = (facilityStore?.[area.key as keyof FacilityStore] ?? []).filter(Boolean);
+    if (!photos.length) return area;
+    return { ...area, img: photos[0], imgs: photos };
+  });
 
   function handleSearch() {
     if (searchCheckIn) dispatch(setFilter({ key: 'checkIn', value: searchCheckIn }));
