@@ -318,14 +318,9 @@ export function Home() {
   const facilityAreas = (() => {
     const stored = loadFacilityStore();
     return FACILITY_AREAS.map((area) => {
-      const photos = stored[area.key as keyof typeof stored];
-      const hasAny = photos.some(Boolean);
-      if (!hasAny) return area;
-      return {
-        ...area,
-        img:  photos[0] || area.img,
-        imgs: photos as [string, string, string],
-      };
+      const photos = stored[area.key as keyof typeof stored].filter(Boolean);
+      if (!photos.length) return area;
+      return { ...area, img: photos[0], imgs: photos };
     });
   })();
 
