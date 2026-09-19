@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, Outlet, useLocation, Navigate } from 'react-router-dom';
 import {
   LayoutDashboard, CalendarDays, Home, Users, Tag, DollarSign,
-  ChevronLeft, LogOut, Bell, Star, ShieldCheck,
+  ChevronLeft, LogOut, Bell, Star, ShieldCheck, ImagePlus,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks/useAppSelector';
@@ -19,6 +19,7 @@ const adminNav = [
   { to: '/admin/promotions', label: 'admin.promotions', icon: Tag },
   { to: '/admin/reviews', label: 'admin.reviews', icon: Star },
   { to: '/admin/verification', label: 'admin.verification', icon: ShieldCheck },
+  { to: '/admin/facilities',  label: 'admin.facilities',   icon: ImagePlus },
 ];
 
 export function AdminLayout() {

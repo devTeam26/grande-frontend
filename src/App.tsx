@@ -36,6 +36,7 @@ const ManageUsers      = lazy(() => import('./pages/admin/ManageUsers').then(m =
 const ManagePromotions = lazy(() => import('./pages/admin/ManagePromotions').then(m => ({ default: m.ManagePromotions })));
 const ManageReviews    = lazy(() => import('./pages/admin/ManageReviews').then(m => ({ default: m.ManageReviews })));
 const ManageVerification = lazy(() => import('./pages/admin/ManageVerification').then(m => ({ default: m.ManageVerification })));
+const ManageFacilities   = lazy(() => import('./pages/admin/ManageFacilities').then(m => ({ default: m.ManageFacilities })));
 
 // Redirects unauthenticated users (including guests) to /login.
 // Saves the page they tried to visit so Login can send them back after success.
@@ -114,6 +115,7 @@ function AppRouter() {
         <Route path="promotions" element={<ManagePromotions />} />
         <Route path="reviews" element={<ManageReviews />} />
         <Route path="verification" element={<ManageVerification />} />
+        <Route path="facilities" element={<ManageFacilities />} />
       </Route>
     </Routes>
     </Suspense>

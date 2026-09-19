@@ -156,6 +156,7 @@ const ar = {
     promotions: 'العروض',
     reviews: 'التقييمات',
     verification: 'التحقق',
+    facilities: 'المرافق',
     total_revenue: 'إجمالي الإيرادات',
     monthly_revenue: 'إيرادات الشهر',
     total_bookings: 'إجمالي الحجوزات',

@@ -11,6 +11,7 @@ import { useAppDispatch } from '../hooks/useAppDispatch';
 import { setFilter, fetchChalets } from '../store/slices/chaletsSlice';
 import { localImagesForChalet } from '../data/chaletImages';
 import type { ChaletType } from '../types';
+import { FACILITY_STORAGE_KEY } from './admin/ManageFacilities';
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL as string) ?? '';
 
@@ -313,6 +314,21 @@ export function Home() {
     el.scrollBy({ left: dir === 'left' ? -285 : 285, behavior: 'smooth' });
   }
   const slides = chalets.slice(0, 6);
+
+  const facilityAreas = FACILITY_AREAS.map((area) => {
+    try {
+      const raw = localStorage.getItem(FACILITY_STORAGE_KEY);
+      if (!raw) return area;
+      const stored = JSON.parse(raw) as Record<string, { img?: string; imgs?: string[] }>;
+      const entry = stored[area.key];
+      if (!entry) return area;
+      return {
+        ...area,
+        img:  entry.img  || area.img,
+        imgs: (entry.imgs?.length === 3 && entry.imgs.some(Boolean)) ? entry.imgs as [string, string, string] : area.imgs,
+      };
+    } catch { return area; }
+  });
 
   function handleSearch() {
     if (searchCheckIn) dispatch(setFilter({ key: 'checkIn', value: searchCheckIn }));
@@ -801,7 +817,7 @@ export function Home() {
           </div>
 
           <div data-aos="fade-up" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {FACILITY_AREAS.map(({ nameEn, nameAr, descEn, descAr, detailEn, detailAr, img, imgs }, i) => (
+            {facilityAreas.map(({ nameEn, nameAr, descEn, descAr, detailEn, detailAr, img, imgs }, i) => (
               <motion.div
                 key={nameEn}
                 initial={{ opacity: 0, y: 20 }}

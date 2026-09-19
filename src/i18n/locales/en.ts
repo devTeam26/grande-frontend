@@ -156,6 +156,7 @@ const en = {
     promotions: 'Promotions',
     reviews: 'Reviews',
     verification: 'Verification',
+    facilities: 'Facilities',
     total_revenue: 'Total Revenue',
     monthly_revenue: 'Monthly Revenue',
     total_bookings: 'Total Bookings',
