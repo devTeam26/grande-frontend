@@ -1,200 +1,231 @@
-import { useState, useEffect } from 'react';
-import { Save, RotateCcw, Image, CheckCircle, AlertCircle } from 'lucide-react';
+import { useRef, useState, useCallback } from 'react';
+import { Camera, X, Upload, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export const FACILITY_STORAGE_KEY = 'grandebeach_facility_photos';
 
-type FacilityKey = 'indoor' | 'kids' | 'reception' | 'outdoor';
+export type FacilityKey = 'indoor' | 'kids' | 'reception' | 'outdoor';
 
-interface FacilityEntry {
-  img: string;
-  imgs: [string, string, string];
-}
+// Per-category: 3 photos. imgs[0] also acts as the home-page card cover.
+export type FacilityStore = Record<FacilityKey, [string, string, string]>;
 
-type FacilityStore = Record<FacilityKey, FacilityEntry>;
-
-const DEFAULTS: FacilityStore = {
-  indoor:    { img: '', imgs: ['', '', ''] },
-  kids:      { img: '', imgs: ['', '', ''] },
-  reception: { img: '', imgs: ['', '', ''] },
-  outdoor:   { img: '', imgs: ['', '', ''] },
+export const FACILITY_DEFAULTS: FacilityStore = {
+  indoor:    ['', '', ''],
+  kids:      ['', '', ''],
+  reception: ['', '', ''],
+  outdoor:   ['', '', ''],
 };
 
-const LABELS: Record<FacilityKey, { en: string; ar: string }> = {
-  indoor:    { en: 'Indoor',    ar: 'داخلي' },
-  kids:      { en: 'Kids Area', ar: 'منطقة الأطفال' },
-  reception: { en: 'Reception', ar: 'الاستقبال' },
-  outdoor:   { en: 'Outdoor',   ar: 'خارجي' },
-};
-
-const KEYS: FacilityKey[] = ['indoor', 'kids', 'reception', 'outdoor'];
-
-function loadStore(): FacilityStore {
+export function loadFacilityStore(): FacilityStore {
   try {
     const raw = localStorage.getItem(FACILITY_STORAGE_KEY);
-    if (!raw) return structuredClone(DEFAULTS);
-    return { ...structuredClone(DEFAULTS), ...JSON.parse(raw) } as FacilityStore;
+    if (!raw) return structuredClone(FACILITY_DEFAULTS);
+    return { ...structuredClone(FACILITY_DEFAULTS), ...JSON.parse(raw) } as FacilityStore;
   } catch {
-    return structuredClone(DEFAULTS);
+    return structuredClone(FACILITY_DEFAULTS);
   }
 }
 
-function ImgPreview({ url }: { url: string }) {
-  const [status, setStatus] = useState<'idle' | 'ok' | 'err'>('idle');
-  useEffect(() => {
-    if (!url) { setStatus('idle'); return; }
-    setStatus('idle');
-    const img = new window.Image();
-    img.onload  = () => setStatus('ok');
-    img.onerror = () => setStatus('err');
-    img.src = url;
-  }, [url]);
+function saveFacilityStore(store: FacilityStore) {
+  localStorage.setItem(FACILITY_STORAGE_KEY, JSON.stringify(store));
+}
 
-  if (!url) return null;
+// Compress + resize an image file using canvas, returns base64 data URL
+function compressImage(file: File, maxPx = 1400, quality = 0.78): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = (e) => {
+      const src = e.target?.result as string;
+      const img = new window.Image();
+      img.onerror = reject;
+      img.onload = () => {
+        const scale = Math.min(1, maxPx / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width  = Math.round(img.width  * scale);
+        canvas.height = Math.round(img.height * scale);
+        const ctx = canvas.getContext('2d')!;
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = src;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+const CATEGORIES: { key: FacilityKey; en: string; ar: string }[] = [
+  { key: 'indoor',    en: 'Indoor',    ar: 'داخلي' },
+  { key: 'kids',      en: 'Kids Area', ar: 'منطقة الأطفال' },
+  { key: 'reception', en: 'Reception', ar: 'الاستقبال' },
+  { key: 'outdoor',   en: 'Outdoor',   ar: 'خارجي' },
+];
+
+const SLOT_LABELS = ['Cover Photo', 'Photo 2', 'Photo 3'];
+
+// Single upload slot
+function PhotoSlot({
+  url, label, onUpload, onRemove,
+}: {
+  url: string;
+  label: string;
+  onUpload: (file: File) => Promise<void>;
+  onRemove: () => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+    setLoading(true);
+    try {
+      await onUpload(file);
+    } finally {
+      setLoading(false);
+    }
+  }, [onUpload]);
+
   return (
-    <div className="mt-2">
-      {status === 'ok' && (
-        <div className="relative w-full h-32 rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
-          <img src={url} alt="preview" className="w-full h-full object-cover" />
-          <span className="absolute top-2 right-2 flex items-center gap-1 bg-emerald-500 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
-            <CheckCircle size={10} /> OK
-          </span>
+    <div className="flex flex-col gap-2">
+      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{label}</p>
+
+      {url ? (
+        <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-gray-100 group">
+          <img src={url} alt={label} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              className="w-9 h-9 rounded-full bg-white/90 flex items-center justify-center text-gray-700 hover:bg-white transition-colors shadow"
+              title="Replace photo"
+            >
+              <Camera size={16} />
+            </button>
+            <button
+              type="button"
+              onClick={onRemove}
+              className="w-9 h-9 rounded-full bg-white/90 flex items-center justify-center text-red-500 hover:bg-white transition-colors shadow"
+              title="Remove photo"
+            >
+              <X size={16} />
+            </button>
+          </div>
         </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={loading}
+          className="aspect-[4/3] rounded-2xl border-2 border-dashed border-gray-200 hover:border-gold-400 bg-gray-50 hover:bg-gold-50/40 flex flex-col items-center justify-center gap-2 transition-all duration-200 group disabled:opacity-60"
+        >
+          {loading ? (
+            <Loader2 size={28} className="text-gold-400 animate-spin" />
+          ) : (
+            <>
+              <div className="w-12 h-12 rounded-xl bg-white border border-gray-200 flex items-center justify-center group-hover:border-gold-300 transition-colors shadow-sm">
+                <Upload size={20} className="text-gray-400 group-hover:text-gold-500 transition-colors" />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-medium text-gray-500 group-hover:text-gold-600 transition-colors">Click to upload</p>
+                <p className="text-[11px] text-gray-400 mt-0.5">JPG, PNG, WEBP</p>
+              </div>
+            </>
+          )}
+        </button>
       )}
-      {status === 'err' && (
-        <div className="flex items-center gap-1.5 text-red-500 text-xs mt-1">
-          <AlertCircle size={13} /> Could not load image — check the URL
-        </div>
-      )}
+
+      <input
+        ref={inputRef}
+        type="file"
+        accept=".jpg,.jpeg,.png,.webp"
+        className="hidden"
+        onChange={handleChange}
+      />
     </div>
   );
 }
 
 export function ManageFacilities() {
-  const [store, setStore] = useState<FacilityStore>(loadStore);
-  const [saved, setSaved] = useState(false);
+  const [store, setStore] = useState<FacilityStore>(loadFacilityStore);
 
-  function setImg(key: FacilityKey, value: string) {
-    setStore((s) => ({ ...s, [key]: { ...s[key], img: value } }));
-    setSaved(false);
+  async function handleUpload(key: FacilityKey, idx: 0 | 1 | 2, file: File) {
+    try {
+      const dataUrl = await compressImage(file);
+      setStore((prev) => {
+        const photos = [...prev[key]] as [string, string, string];
+        photos[idx] = dataUrl;
+        const next = { ...prev, [key]: photos };
+        saveFacilityStore(next);
+        return next;
+      });
+      toast.success('Photo uploaded');
+    } catch {
+      toast.error('Failed to process image');
+    }
   }
 
-  function setGallery(key: FacilityKey, idx: 0 | 1 | 2, value: string) {
-    setStore((s) => {
-      const imgs = [...s[key].imgs] as [string, string, string];
-      imgs[idx] = value;
-      return { ...s, [key]: { ...s[key], imgs } };
+  function handleRemove(key: FacilityKey, idx: 0 | 1 | 2) {
+    setStore((prev) => {
+      const photos = [...prev[key]] as [string, string, string];
+      photos[idx] = '';
+      const next = { ...prev, [key]: photos };
+      saveFacilityStore(next);
+      return next;
     });
-    setSaved(false);
   }
 
-  function handleSave() {
-    localStorage.setItem(FACILITY_STORAGE_KEY, JSON.stringify(store));
-    setSaved(true);
-    toast.success('Facility photos saved');
-  }
-
-  function handleReset(key: FacilityKey) {
-    setStore((s) => ({ ...s, [key]: structuredClone(DEFAULTS[key]) }));
-    setSaved(false);
+  function handleClearAll(key: FacilityKey) {
+    setStore((prev) => {
+      const next = { ...prev, [key]: ['', '', ''] as [string, string, string] };
+      saveFacilityStore(next);
+      return next;
+    });
+    toast.success('Photos cleared');
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Resort Facilities</h2>
-          <p className="text-sm text-gray-500 mt-1">
-            Enter CDN photo URLs for each facility category. Changes are saved to this browser and reflected on the homepage immediately.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={handleSave}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-            saved
-              ? 'bg-emerald-500 text-white'
-              : 'bg-gold-500 hover:bg-gold-600 text-white'
-          }`}
-        >
-          {saved ? <CheckCircle size={16} /> : <Save size={16} />}
-          {saved ? 'Saved' : 'Save All'}
-        </button>
+    <div className="max-w-5xl mx-auto">
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-gray-900">Resort Facilities Photos</h2>
+        <p className="text-sm text-gray-500 mt-1">
+          Upload photos for each facility category. The first photo is also used as the card cover on the home page. Changes are saved instantly.
+        </p>
       </div>
 
-      <div className="space-y-6">
-        {KEYS.map((key) => (
+      <div className="space-y-8">
+        {CATEGORIES.map(({ key, en, ar }) => (
           <div key={key} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            {/* Card header */}
+            {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-gold-50 flex items-center justify-center">
-                  <Image className="text-gold-500" size={16} />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">{LABELS[key].en}</h3>
-                  <p className="text-xs text-gray-400">{LABELS[key].ar}</p>
-                </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 text-base">{en}</h3>
+                <p className="text-xs text-gray-400">{ar}</p>
               </div>
               <button
                 type="button"
-                onClick={() => handleReset(key)}
-                className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                onClick={() => handleClearAll(key)}
+                className="text-xs text-gray-400 hover:text-red-500 transition-colors font-medium"
               >
-                <RotateCcw size={12} /> Clear
+                Clear all
               </button>
             </div>
 
-            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Cover photo */}
-              <div className="md:col-span-2">
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">
-                  Cover Photo <span className="text-gray-400 font-normal normal-case">(shown on home page card)</span>
-                </label>
-                <input
-                  type="url"
-                  placeholder="https://cdn.example.com/photo.jpg"
-                  value={store[key].img}
-                  onChange={(e) => setImg(key, e.target.value)}
-                  className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400 font-mono"
-                />
-                <ImgPreview url={store[key].img} />
-              </div>
-
-              {/* Gallery photos */}
+            {/* Photo slots */}
+            <div className="p-6 grid grid-cols-1 sm:grid-cols-3 gap-5">
               {([0, 1, 2] as const).map((idx) => (
-                <div key={idx}>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">
-                    Gallery Photo {idx + 1} <span className="text-gray-400 font-normal normal-case">(modal carousel)</span>
-                  </label>
-                  <input
-                    type="url"
-                    placeholder="https://cdn.example.com/photo.jpg"
-                    value={store[key].imgs[idx]}
-                    onChange={(e) => setGallery(key, idx, e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400 font-mono"
-                  />
-                  <ImgPreview url={store[key].imgs[idx]} />
-                </div>
+                <PhotoSlot
+                  key={idx}
+                  url={store[key][idx]}
+                  label={SLOT_LABELS[idx]}
+                  onUpload={(file) => handleUpload(key, idx, file)}
+                  onRemove={() => handleRemove(key, idx)}
+                />
               ))}
             </div>
           </div>
         ))}
-      </div>
-
-      <div className="mt-6 flex justify-end">
-        <button
-          type="button"
-          onClick={handleSave}
-          className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all ${
-            saved
-              ? 'bg-emerald-500 text-white'
-              : 'bg-gold-500 hover:bg-gold-600 text-white'
-          }`}
-        >
-          {saved ? <CheckCircle size={16} /> : <Save size={16} />}
-          {saved ? 'All Changes Saved' : 'Save All Changes'}
-        </button>
       </div>
     </div>
   );

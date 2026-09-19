@@ -11,7 +11,7 @@ import { useAppDispatch } from '../hooks/useAppDispatch';
 import { setFilter, fetchChalets } from '../store/slices/chaletsSlice';
 import { localImagesForChalet } from '../data/chaletImages';
 import type { ChaletType } from '../types';
-import { FACILITY_STORAGE_KEY } from './admin/ManageFacilities';
+import { loadFacilityStore } from './admin/ManageFacilities';
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL as string) ?? '';
 
@@ -315,20 +315,19 @@ export function Home() {
   }
   const slides = chalets.slice(0, 6);
 
-  const facilityAreas = FACILITY_AREAS.map((area) => {
-    try {
-      const raw = localStorage.getItem(FACILITY_STORAGE_KEY);
-      if (!raw) return area;
-      const stored = JSON.parse(raw) as Record<string, { img?: string; imgs?: string[] }>;
-      const entry = stored[area.key];
-      if (!entry) return area;
+  const facilityAreas = (() => {
+    const stored = loadFacilityStore();
+    return FACILITY_AREAS.map((area) => {
+      const photos = stored[area.key as keyof typeof stored];
+      const hasAny = photos.some(Boolean);
+      if (!hasAny) return area;
       return {
         ...area,
-        img:  entry.img  || area.img,
-        imgs: (entry.imgs?.length === 3 && entry.imgs.some(Boolean)) ? entry.imgs as [string, string, string] : area.imgs,
+        img:  photos[0] || area.img,
+        imgs: photos as [string, string, string],
       };
-    } catch { return area; }
-  });
+    });
+  })();
 
   function handleSearch() {
     if (searchCheckIn) dispatch(setFilter({ key: 'checkIn', value: searchCheckIn }));
