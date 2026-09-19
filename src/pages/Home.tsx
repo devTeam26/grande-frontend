@@ -194,6 +194,126 @@ const TAB_ITEMS: Record<'dining' | 'activities' | 'kuwait', TabCard[]> = {
   ],
 };
 
+// Replace each URL below with your actual CDN photo URLs
+const FACILITY_PHOTOS: Record<'indoor' | 'kids' | 'reception' | 'outdoor', TabCard[]> = {
+  indoor: [
+    {
+      nameEn: 'Luxury Living Room', nameAr: 'غرفة المعيشة الفاخرة', mt: false,
+      descEn: 'Spacious, elegantly furnished living areas with premium finishes throughout.',
+      descAr: 'مساحات معيشة فسيحة ومزينة بأناقة مع تشطيبات راقية في كل مكان.',
+      detailEn: 'Our indoor living spaces blend contemporary design with Kuwaiti warmth. Every detail — from handpicked furnishings to ambient lighting — is crafted to make you feel at home while experiencing true luxury.',
+      detailAr: 'تجمع مساحاتنا الداخلية بين التصميم المعاصر ودفء الضيافة الكويتية. كل تفصيل — من الأثاث المختار بعناية إلى الإضاءة المحيطة — مصمم ليشعرك بالمنزل مع تجربة الفخامة الحقيقية.',
+      img: 'https://cdn.grandebeach.com/facilities/indoor/living-1.jpg',
+      imgs: ['https://cdn.grandebeach.com/facilities/indoor/living-1.jpg', 'https://cdn.grandebeach.com/facilities/indoor/living-2.jpg', 'https://cdn.grandebeach.com/facilities/indoor/living-3.jpg'],
+    },
+    {
+      nameEn: 'Master Bedroom', nameAr: 'غرفة النوم الرئيسية', mt: true,
+      descEn: 'King-sized beds with premium linens and Gulf-view windows.',
+      descAr: 'أسرة كينج مع بياضات راقية ونوافذ تطل على الخليج.',
+      detailEn: 'Sink into cloud-like comfort in our master bedrooms, featuring king-sized beds dressed in 400-thread-count Egyptian cotton, blackout curtains and panoramic Gulf views. Nightly turndown service included.',
+      detailAr: 'استغرق في راحة تشبه السحاب في غرف نومنا الرئيسية، مع أسرة كينج مغطاة بقطن مصري وستائر معتمة وإطلالات بانورامية على الخليج. خدمة تحضير السرير المسائية مشمولة.',
+      img: 'https://cdn.grandebeach.com/facilities/indoor/bedroom-1.jpg',
+      imgs: ['https://cdn.grandebeach.com/facilities/indoor/bedroom-1.jpg', 'https://cdn.grandebeach.com/facilities/indoor/bedroom-2.jpg', 'https://cdn.grandebeach.com/facilities/indoor/bedroom-3.jpg'],
+    },
+    {
+      nameEn: 'Modern Kitchen', nameAr: 'مطبخ عصري', mt: false,
+      descEn: 'Fully equipped kitchens with premium appliances for self-catering.',
+      descAr: 'مطابخ مجهزة بالكامل بأجهزة راقية للإفطار الذاتي.',
+      detailEn: 'Each chalet features a fully equipped kitchen with professional-grade appliances — built-in oven, microwave, refrigerator and espresso machine. Perfect for families who prefer home cooking with a seaside view.',
+      detailAr: 'يحتوي كل شاليه على مطبخ مجهز بالكامل بأجهزة احترافية تشمل فرن مدمج وميكروويف وثلاجة وماكينة إسبريسو. مثالي للعائلات التي تفضل الطهي المنزلي مع إطلالة بحرية.',
+      img: 'https://cdn.grandebeach.com/facilities/indoor/kitchen-1.jpg',
+      imgs: ['https://cdn.grandebeach.com/facilities/indoor/kitchen-1.jpg', 'https://cdn.grandebeach.com/facilities/indoor/kitchen-2.jpg', 'https://cdn.grandebeach.com/facilities/indoor/kitchen-3.jpg'],
+    },
+  ],
+  kids: [
+    {
+      nameEn: 'Kids Pool', nameAr: 'مسبح الأطفال', mt: false,
+      descEn: 'A safe, shallow pool area dedicated to our youngest guests.',
+      descAr: 'منطقة مسبح ضحلة وآمنة مخصصة لأصغر ضيوفنا.',
+      detailEn: 'Our dedicated kids pool features gentle water elements, colorful floats and a shallow depth perfect for toddlers. Lifeguards are on duty at all times and the pool is heated year-round. Open daily 9 AM – 7 PM.',
+      detailAr: 'يضم مسبح الأطفال المخصص لدينا عناصر مائية لطيفة وعوامات ملونة وعمقاً ضحلاً مثالياً للصغار. الحراس موجودون في جميع الأوقات والمسبح مدفأ طوال العام. مفتوح يومياً 9 ص – 7 م.',
+      img: 'https://cdn.grandebeach.com/facilities/kids/pool-1.jpg',
+      imgs: ['https://cdn.grandebeach.com/facilities/kids/pool-1.jpg', 'https://cdn.grandebeach.com/facilities/kids/pool-2.jpg', 'https://cdn.grandebeach.com/facilities/kids/pool-3.jpg'],
+    },
+    {
+      nameEn: 'Play Area', nameAr: 'منطقة اللعب', mt: true,
+      descEn: 'A vibrant outdoor play zone with slides, swings and climbing frames.',
+      descAr: 'منطقة لعب خارجية نابضة بالحياة مع زحاليق وأراجيح وأجهزة تسلق.',
+      detailEn: 'Our expansive outdoor play area is designed with safety and fun in mind — rubber-cushioned flooring, age-appropriate equipment and shaded seating for parents. Supervised activity sessions every Saturday morning.',
+      detailAr: 'مصممة منطقة اللعب الخارجية الواسعة مع مراعاة الأمان والمرح — أرضية مطاطية مبطنة ومعدات مناسبة للأعمار ومقاعد مظللة للوالدين. جلسات أنشطة خاضعة للإشراف كل صباح سبت.',
+      img: 'https://cdn.grandebeach.com/facilities/kids/play-1.jpg',
+      imgs: ['https://cdn.grandebeach.com/facilities/kids/play-1.jpg', 'https://cdn.grandebeach.com/facilities/kids/play-2.jpg', 'https://cdn.grandebeach.com/facilities/kids/play-3.jpg'],
+    },
+    {
+      nameEn: 'Game Room', nameAr: 'غرفة الألعاب', mt: false,
+      descEn: 'Indoor entertainment room packed with games for all ages.',
+      descAr: 'غرفة ترفيه داخلية مليئة بالألعاب لجميع الأعمار.',
+      detailEn: 'Keep the whole family entertained in our vibrant indoor game room — table football, air hockey, console gaming and board games. Open daily 10 AM – 10 PM at no extra charge for guests.',
+      detailAr: 'ابقَ الأسرة بأكملها مترفهة في غرفة الألعاب الداخلية — كرة قدم طاولة وهوكي هواء وألعاب وحدة وألعاب لوحية. مفتوح يومياً 10 ص – 10 م مجاناً للضيوف.',
+      img: 'https://cdn.grandebeach.com/facilities/kids/games-1.jpg',
+      imgs: ['https://cdn.grandebeach.com/facilities/kids/games-1.jpg', 'https://cdn.grandebeach.com/facilities/kids/games-2.jpg', 'https://cdn.grandebeach.com/facilities/kids/games-3.jpg'],
+    },
+  ],
+  reception: [
+    {
+      nameEn: 'Grand Lobby', nameAr: 'البهو الرئيسي', mt: false,
+      descEn: 'An awe-inspiring entrance that sets the tone for your entire stay.',
+      descAr: 'مدخل مبهر يحدد أجواء إقامتك بالكامل.',
+      detailEn: 'Step into the Grande Beach lobby and be greeted by soaring ceilings, marble floors and an architectural centerpiece framing the Gulf view beyond. Our concierge team is on hand 24/7 to assist with every request.',
+      detailAr: 'ادخل إلى بهو غراند بيتش وستُرحَّب بك بأسقف شامخة وأرضيات رخامية وتحفة معمارية تؤطر إطلالة الخليج. فريق الكونسيرج متاح 24/7 للمساعدة في كل طلب.',
+      img: 'https://cdn.grandebeach.com/facilities/reception/lobby-1.jpg',
+      imgs: ['https://cdn.grandebeach.com/facilities/reception/lobby-1.jpg', 'https://cdn.grandebeach.com/facilities/reception/lobby-2.jpg', 'https://cdn.grandebeach.com/facilities/reception/lobby-3.jpg'],
+    },
+    {
+      nameEn: 'Check-In Desk', nameAr: 'مكتب الاستقبال', mt: true,
+      descEn: 'Swift, personalised check-in by our dedicated hospitality team.',
+      descAr: 'تسجيل وصول سريع وشخصي من فريق الضيافة المخصص.',
+      detailEn: 'Our friendly reception staff ensure a smooth, swift check-in experience. Digital verification and pre-registration via the app means most guests are settled in their chalet within minutes of arrival.',
+      detailAr: 'يضمن موظفو الاستقبال الودودون لدينا تجربة تسجيل وصول سلسة وسريعة. التحقق الرقمي والتسجيل المسبق عبر التطبيق يعني أن معظم الضيوف يستقرون في شاليههم في دقائق من الوصول.',
+      img: 'https://cdn.grandebeach.com/facilities/reception/desk-1.jpg',
+      imgs: ['https://cdn.grandebeach.com/facilities/reception/desk-1.jpg', 'https://cdn.grandebeach.com/facilities/reception/desk-2.jpg', 'https://cdn.grandebeach.com/facilities/reception/desk-3.jpg'],
+    },
+    {
+      nameEn: 'Waiting Lounge', nameAr: 'صالة الانتظار', mt: false,
+      descEn: 'A comfortable lounge with complimentary refreshments upon arrival.',
+      descAr: 'صالة مريحة مع مرطبات مجانية عند الوصول.',
+      detailEn: "Our welcoming lounge offers plush seating, complimentary Arabic coffee and dates, and a curated reading selection — all with a view of the sea — while your chalet is prepared.",
+      detailAr: 'تقدم صالة انتظارنا الترحيبية مقاعد وثيرة وقهوة عربية وتمور مجانية ومجموعة قراءة منتقاة — كل ذلك مع إطلالة على البحر — أثناء تحضير شاليهك.',
+      img: 'https://cdn.grandebeach.com/facilities/reception/lounge-1.jpg',
+      imgs: ['https://cdn.grandebeach.com/facilities/reception/lounge-1.jpg', 'https://cdn.grandebeach.com/facilities/reception/lounge-2.jpg', 'https://cdn.grandebeach.com/facilities/reception/lounge-3.jpg'],
+    },
+  ],
+  outdoor: [
+    {
+      nameEn: 'Private Beach', nameAr: 'الشاطئ الخاص', mt: false,
+      descEn: 'Pristine white sands and crystal-clear Gulf waters — exclusively for guests.',
+      descAr: 'رمال بيضاء ناصعة ومياه خليجية صافية — حصرياً للضيوف.',
+      detailEn: 'Our private beachfront stretches over 500 metres of pristine Arabian Gulf coastline. Sun loungers, umbrellas, towel service and freshwater showers are provided complimentary. Staffed lifeguard posts operate dawn to dusk.',
+      detailAr: 'يمتد شاطئنا الخاص على أكثر من 500 متر من ساحل الخليج العربي البكر. كراسي الشمس والمظلات والمناشف ودش الماء العذب مجانية لجميع الضيوف. مراكز الإنقاذ تعمل من الفجر حتى الغروب.',
+      img: 'https://cdn.grandebeach.com/facilities/outdoor/beach-1.jpg',
+      imgs: ['https://cdn.grandebeach.com/facilities/outdoor/beach-1.jpg', 'https://cdn.grandebeach.com/facilities/outdoor/beach-2.jpg', 'https://cdn.grandebeach.com/facilities/outdoor/beach-3.jpg'],
+    },
+    {
+      nameEn: 'Infinity Pool', nameAr: 'المسبح اللانهائي', mt: true,
+      descEn: 'A stunning infinity pool that merges seamlessly with the Gulf horizon.',
+      descAr: 'مسبح لانهائي رائع يندمج بسلاسة مع أفق الخليج.',
+      detailEn: 'Our signature infinity pool appears to flow directly into the Arabian Gulf, creating a breathtaking optical illusion. Heated year-round and open until 10 PM, it is the centrepiece of our outdoor terrace experience.',
+      detailAr: 'يبدو مسبحنا اللانهائي المميز وكأنه يتدفق مباشرة في الخليج العربي، مما يخلق وهماً بصرياً مذهلاً. مدفأ طوال العام ومفتوح حتى الساعة 10 م، وهو محور تجربة الشرفة الخارجية لدينا.',
+      img: 'https://cdn.grandebeach.com/facilities/outdoor/pool-1.jpg',
+      imgs: ['https://cdn.grandebeach.com/facilities/outdoor/pool-1.jpg', 'https://cdn.grandebeach.com/facilities/outdoor/pool-2.jpg', 'https://cdn.grandebeach.com/facilities/outdoor/pool-3.jpg'],
+    },
+    {
+      nameEn: 'Garden Terrace', nameAr: 'شرفة الحديقة', mt: false,
+      descEn: 'Lush landscaped gardens and terraces for relaxed outdoor living.',
+      descAr: 'حدائق مشجرة خضراء وشرفات للعيش الخارجي المريح.',
+      detailEn: 'Wander through beautifully landscaped gardens with native Kuwaiti flora and shaded pergola walkways. The garden terrace is the perfect spot for an evening stroll, a quiet read or a family sunset photo.',
+      detailAr: 'تجول في الحدائق الجميلة المزروعة بالنباتات الكويتية الأصلية وممرات البرغولا المظللة. شرفة الحديقة هي المكان المثالي للتجول المسائي أو القراءة الهادئة أو صور الغروب العائلية.',
+      img: 'https://cdn.grandebeach.com/facilities/outdoor/garden-1.jpg',
+      imgs: ['https://cdn.grandebeach.com/facilities/outdoor/garden-1.jpg', 'https://cdn.grandebeach.com/facilities/outdoor/garden-2.jpg', 'https://cdn.grandebeach.com/facilities/outdoor/garden-3.jpg'],
+    },
+  ],
+};
+
 export function Home() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -254,6 +374,7 @@ export function Home() {
   const [searchCheckOut, setSearchCheckOut] = useState('');
   const [searchGuests, setSearchGuests] = useState('2');
   const [sliderIdx, setSliderIdx] = useState(0);
+  const [facilityTab, setFacilityTab] = useState<'indoor' | 'kids' | 'reception' | 'outdoor'>('indoor');
   const [activeTab, setActiveTab] = useState<'dining' | 'activities' | 'kuwait'>('dining');
   const [modalCard, setModalCard] = useState<TabCard | null>(null);
   const [requestChalet, setRequestChalet] = useState<{ id: string; name: string } | null>(null);
@@ -736,6 +857,100 @@ export function Home() {
           >
             <ChevronRight size={18} />
           </button>
+        </div>
+      </section>
+
+      {/* ── Resort Facilities ── */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div data-aos="fade-up" className="text-center mb-10">
+            <p className="text-gold-500 text-[11px] font-bold tracking-[0.35em] uppercase mb-3">
+              {lang === 'ar' ? 'مرافقنا' : 'Our Facilities'}
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
+              {lang === 'ar' ? 'استكشف كل ركن' : 'Explore Every Corner'}
+            </h2>
+            <p className="text-gray-400 mt-2 text-sm max-w-xl mx-auto">
+              {lang === 'ar'
+                ? 'من الغرف الداخلية الفاخرة إلى الشواطئ الخارجية الساحرة — كل تفصيل في غراند بيتش مصمم لإبهارك.'
+                : 'From luxurious indoor suites to breathtaking outdoor shores — every detail at Grande Beach is designed to impress.'}
+            </p>
+          </div>
+
+          {/* Tab buttons */}
+          <div data-aos="fade-up" className="flex flex-wrap items-center justify-center gap-2 mb-10">
+            {([
+              { key: 'indoor',    labelEn: 'Indoor',    labelAr: 'داخلي' },
+              { key: 'kids',      labelEn: 'Kids Area', labelAr: 'منطقة الأطفال' },
+              { key: 'reception', labelEn: 'Reception', labelAr: 'الاستقبال' },
+              { key: 'outdoor',   labelEn: 'Outdoor',   labelAr: 'خارجي' },
+            ] as const).map(({ key, labelEn, labelAr }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setFacilityTab(key)}
+                className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
+                  facilityTab === key
+                    ? 'bg-navy-800 text-white shadow-lg'
+                    : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-400 hover:text-gray-700'
+                }`}
+              >
+                {lang === 'ar' ? labelAr : labelEn}
+              </button>
+            ))}
+          </div>
+
+          {/* Photo grid */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={facilityTab}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              {FACILITY_PHOTOS[facilityTab].map(({ nameEn, nameAr, descEn, descAr, detailEn, detailAr, img, imgs }, i) => {
+                const tabLabel = {
+                  indoor:    { en: 'Indoor',    ar: 'داخلي' },
+                  kids:      { en: 'Kids Area', ar: 'الأطفال' },
+                  reception: { en: 'Reception', ar: 'استقبال' },
+                  outdoor:   { en: 'Outdoor',   ar: 'خارجي' },
+                }[facilityTab];
+                return (
+                  <motion.div
+                    key={nameEn}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.07 }}
+                    className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col"
+                    onClick={() => { setModalCard({ nameEn, nameAr, descEn, descAr, detailEn, detailAr, img, imgs, mt: false }); setModalPhotoIdx(0); }}
+                  >
+                    <div className="relative overflow-hidden aspect-[4/3] bg-gray-100">
+                      <img
+                        src={img}
+                        alt={lang === 'ar' ? nameAr : nameEn}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                      <div className="absolute top-3 start-3">
+                        <span className="bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
+                          {lang === 'ar' ? tabLabel.ar : tabLabel.en}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-4 flex flex-col flex-1">
+                      <h3 className="font-semibold text-gray-900 text-base mb-1">{lang === 'ar' ? nameAr : nameEn}</h3>
+                      <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 mb-3 flex-1">{lang === 'ar' ? descAr : descEn}</p>
+                      <span className="text-[11px] text-gold-600 font-semibold">
+                        {lang === 'ar' ? 'عرض الصور ←' : '→ View Photos'}
+                      </span>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </section>
 
