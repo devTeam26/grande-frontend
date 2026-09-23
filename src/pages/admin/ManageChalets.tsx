@@ -443,7 +443,7 @@ function ImageManager({ chaletId, chaletName, onClose }: { chaletId: string; cha
               disabled={uploading}
               onChange={(e) => {
                 const file = e.target.files?.[0];
-                if (file) { setSelectedFile(file); handleUpload(file); }
+                if (file) handleUpload(file);
               }}
               className="block w-full text-sm text-gray-600 cursor-pointer disabled:opacity-50
                 file:mr-4 file:py-2 file:px-4 file:cursor-pointer
