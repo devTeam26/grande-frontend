@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Plus, Edit3, Trash2, RefreshCw, Building2, Package,
   X, Loader2, Star, BedDouble, Bath, Users,
-  AlertCircle, Search, ToggleLeft, ToggleRight, ImageIcon, DollarSign,
+  AlertCircle, Search, ToggleLeft, ToggleRight, ImageIcon, DollarSign, Upload,
 } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
@@ -315,46 +315,35 @@ function PriceModal({ chaletId, chaletName, currentBase, currentWeekend, onClose
 // ── ImageManager ──────────────────────────────────────────────────────────────
 
 function ImageManager({ chaletId, chaletName, onClose }: { chaletId: string; chaletName: string; onClose: () => void }) {
-  const fileRef = useRef<HTMLInputElement>(null);
-  const [images, setImages]         = useState<ApiImage[]>([]);
-  const [loading, setLoading]       = useState(true);
-  const [uploading, setUploading]   = useState(false);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [images, setImages]             = useState<ApiImage[]>([]);
+  const [loading, setLoading]           = useState(true);
+  const [uploading, setUploading]       = useState(false);
+  const [deletingId, setDeletingId]     = useState<string | null>(null);
   const [settingPrimaryId, setSettingPrimaryId] = useState<string | null>(null);
-  const [pendingFile, setPendingFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl]   = useState<string | null>(null);
-  const [confirmAction, setConfirmAction] = useState<{ type: 'delete' | 'primary'; id: string } | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isPrimary, setIsPrimary]       = useState(false);
+  const [inputKey, setInputKey]         = useState(0);
 
-  useEffect(() => {
-    if (!pendingFile) { setPreviewUrl(null); return; }
-    const url = URL.createObjectURL(pendingFile);
-    setPreviewUrl(url);
-    return () => URL.revokeObjectURL(url);
-  }, [pendingFile]);
-
-  useEffect(() => {
-    apiGetChalet(chaletId).then((data) => {
-      setImages(data?.images ?? []);
-      setLoading(false);
-    });
+  const load = useCallback(async () => {
+    setLoading(true);
+    const data = await apiGetChalet(chaletId);
+    setImages(data?.images ?? []);
+    setLoading(false);
   }, [chaletId]);
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    e.target.value = '';
-    setPendingFile(file);
-  }
+  useEffect(() => { load(); }, [load]);
 
   async function handleUpload() {
-    if (!pendingFile) return;
+    if (!selectedFile) return;
     setUploading(true);
-    const r = await apiUploadImage(chaletId, pendingFile, false);
+    const r = await apiUploadImage(chaletId, selectedFile, isPrimary);
     setUploading(false);
     if (r.success) {
       toast.success('Image uploaded');
-      setPendingFile(null);
-      apiGetChalet(chaletId).then((data) => { if (data) setImages(data.images ?? []); });
+      setSelectedFile(null);
+      setIsPrimary(false);
+      setInputKey((k) => k + 1);
+      load();
     } else {
       toast.error(r.message || 'Upload failed');
     }
@@ -364,10 +353,9 @@ function ImageManager({ chaletId, chaletName, onClose }: { chaletId: string; cha
     setDeletingId(imageId);
     const r = await apiDeleteImage(chaletId, imageId);
     setDeletingId(null);
-    setConfirmAction(null);
     if (r.success) {
       toast.success('Image deleted');
-      setImages((prev) => prev.filter((i) => i.id !== imageId));
+      setImages((imgs) => imgs.filter((i) => i.id !== imageId));
     } else {
       toast.error('Failed to delete image');
     }
@@ -377,177 +365,135 @@ function ImageManager({ chaletId, chaletName, onClose }: { chaletId: string; cha
     setSettingPrimaryId(imageId);
     const r = await apiSetPrimaryImage(chaletId, imageId);
     setSettingPrimaryId(null);
-    setConfirmAction(null);
     if (r.success) {
-      toast.success('Primary image set');
-      apiGetChalet(chaletId).then((data) => { if (data) setImages(data.images ?? []); });
+      toast.success('Primary image updated');
+      load();
     } else {
       toast.error('Failed to set primary image');
     }
   }
 
-  const isCdn = (url: string) => url.includes('digitaloceanspaces.com');
-
-  // Only show CDN images — filter out any local/legacy URLs
-  const sorted = [...images]
-    .filter((img) => isCdn(img.url))
-    .sort((a, b) => {
-      if (a.isPrimary && !b.isPrimary) return -1;
-      if (!a.isPrimary && b.isPrimary) return 1;
-      return a.sortOrder - b.sortOrder;
-    });
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh]">
-
-        {/* ── Header ── */}
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl flex flex-col max-h-[85vh]">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
           <div>
-            <h2 className="font-semibold text-gray-900">Manage Images</h2>
-            <p className="text-xs text-gray-400 mt-0.5">{chaletName} · {sorted.length} CDN photo{sorted.length !== 1 ? 's' : ''}</p>
+            <h2 className="text-base font-semibold text-gray-900">Manage Images</h2>
+            <p className="text-xs text-gray-400 mt-0.5">{chaletName}</p>
           </div>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400"><X size={16} /></button>
         </div>
 
         <div className="overflow-y-auto flex-1 px-6 py-5 space-y-5">
 
-          {/* ── Gallery grid ── */}
-          {loading ? (
-            <div className="grid grid-cols-3 gap-3">
-              {[1, 2, 3].map((i) => <div key={i} className="aspect-video rounded-xl bg-gray-100 animate-pulse" />)}
-            </div>
-          ) : sorted.length === 0 && !pendingFile ? (
-            <div
-              onClick={() => fileRef.current?.click()}
-              className="flex flex-col items-center justify-center gap-3 py-14 border-2 border-dashed border-gray-200 rounded-2xl text-gray-400 cursor-pointer hover:border-gold-400 hover:text-gold-500 hover:bg-gold-50/30 transition-colors"
-            >
-              <ImageIcon size={36} className="opacity-40" />
-              <p className="text-sm font-medium">No CDN images yet — click to add the first one</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-3 gap-3">
-              {sorted.map((img) => (
-                <div key={img.id} className="relative rounded-xl overflow-hidden border border-gray-100 bg-gray-50 group shadow-sm">
-
-                  <img src={img.url} alt="" className="w-full aspect-video object-cover" />
-
-                  {/* CDN badge — bottom left */}
-                  <span className="absolute bottom-1.5 start-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500 text-white">
-                    ✓ CDN
-                  </span>
-
-                  {/* Primary badge / Set primary — top left */}
-                  {img.isPrimary ? (
-                    <span className="absolute top-1.5 start-1.5 bg-gold-500 text-white text-[10px] px-2 py-0.5 rounded-full font-semibold flex items-center gap-0.5">
-                      <Star size={8} className="fill-white" /> Primary
-                    </span>
-                  ) : (
+          {/* Gallery */}
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+              Gallery {!loading && `(${images.length})`}
+            </p>
+            {loading ? (
+              <div className="grid grid-cols-3 gap-3">
+                {[1, 2, 3].map((i) => <div key={i} className="aspect-video rounded-xl bg-gray-100 animate-pulse" />)}
+              </div>
+            ) : images.length === 0 ? (
+              <div className="text-center py-8 border-2 border-dashed border-gray-100 rounded-xl text-gray-400 text-sm">
+                <ImageIcon size={28} className="mx-auto mb-2 opacity-30" />
+                No images yet
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-3">
+                {[...images].sort((a, b) => a.sortOrder - b.sortOrder).map((img) => (
+                  <div key={img.id} className="relative rounded-xl overflow-hidden border border-gray-100 bg-gray-50 group">
+                    <img src={img.url} alt="" className="w-full aspect-video object-cover" />
+                    {img.isPrimary && (
+                      <span className="absolute top-1.5 start-1.5 bg-gold-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-medium flex items-center gap-0.5">
+                        <Star size={8} className="fill-white" /> Primary
+                      </span>
+                    )}
+                    {!img.isPrimary && (
+                      <button
+                        onClick={() => handleSetPrimary(img.id)}
+                        disabled={settingPrimaryId === img.id}
+                        className="absolute top-1.5 start-1.5 flex items-center gap-1 px-1.5 py-0.5 bg-white/90 rounded-full text-[10px] font-medium text-gray-600 shadow-sm hover:bg-gold-50 hover:text-gold-600 disabled:opacity-50 transition-colors"
+                      >
+                        {settingPrimaryId === img.id
+                          ? <Loader2 size={9} className="animate-spin" />
+                          : <Star size={9} />}
+                        Set Primary
+                      </button>
+                    )}
                     <button
-                      onClick={() => setConfirmAction({ type: 'primary', id: img.id })}
-                      disabled={!!settingPrimaryId}
-                      className="absolute top-1.5 start-1.5 hidden group-hover:flex items-center gap-1 px-2 py-0.5 bg-white/90 rounded-full text-[10px] font-semibold text-gray-600 shadow hover:bg-gold-50 hover:text-gold-600 disabled:opacity-50 transition-colors"
+                      onClick={() => handleDelete(img.id)}
+                      disabled={deletingId === img.id}
+                      className="absolute top-1.5 end-1.5 p-1 bg-white rounded-full text-red-500 shadow-md hover:bg-red-50 disabled:opacity-50 transition-colors"
                     >
-                      <Star size={9} /> Set Primary
+                      {deletingId === img.id ? <Loader2 size={11} className="animate-spin" /> : <X size={11} />}
                     </button>
-                  )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-                  {/* Delete — top right */}
-                  <button
-                    onClick={() => setConfirmAction({ type: 'delete', id: img.id })}
-                    disabled={deletingId === img.id}
-                    className="absolute top-1.5 end-1.5 hidden group-hover:flex p-1.5 bg-white rounded-full text-red-500 shadow hover:bg-red-50 disabled:opacity-50 transition-colors"
-                  >
-                    <X size={11} />
-                  </button>
+          {/* Upload */}
+          <div className="border border-dashed border-gray-200 rounded-xl p-5 space-y-4 bg-gray-50/50">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Upload New Image</p>
 
-                </div>
-              ))}
+            <input
+              key={inputKey}
+              type="file"
+              accept="image/*"
+              onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
+              className="block w-full text-sm text-gray-600 cursor-pointer
+                file:mr-4 file:py-2 file:px-4 file:cursor-pointer
+                file:rounded-lg file:border file:border-gray-200
+                file:text-sm file:font-medium
+                file:bg-white file:text-gray-700
+                hover:file:bg-gray-50 file:transition-colors"
+            />
 
-              {/* Add photo slot */}
-              <button
-                onClick={() => fileRef.current?.click()}
-                className="aspect-video rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-gold-400 hover:text-gold-500 hover:bg-gold-50/30 transition-colors"
-              >
-                <Plus size={24} />
-                <span className="text-xs font-semibold">Add Photo</span>
-              </button>
-            </div>
-          )}
-
-          {/* ── Preview + Upload (appears only when file is chosen) ── */}
-          {previewUrl && pendingFile && (
-            <div className="rounded-2xl border border-gray-200 overflow-hidden bg-gray-50 shadow-sm">
-              <div className="relative">
-                <img src={previewUrl} alt="Preview" className="w-full max-h-56 object-cover" />
-                <span className="absolute top-2 start-2 bg-navy-800 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
-                  Preview
+            {selectedFile && (
+              <div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 border border-emerald-100 rounded-lg">
+                <ImageIcon size={13} className="text-emerald-500 flex-shrink-0" />
+                <span className="text-xs text-emerald-700 truncate flex-1 font-medium">{selectedFile.name}</span>
+                <span className="text-xs text-emerald-500 flex-shrink-0">
+                  {(selectedFile.size / 1024).toFixed(0)} KB
                 </span>
                 <button
-                  onClick={() => setPendingFile(null)}
-                  className="absolute top-2 end-2 p-1.5 bg-white/90 rounded-full text-gray-500 hover:text-red-500 shadow transition-colors"
+                  onClick={() => { setSelectedFile(null); setInputKey((k) => k + 1); }}
+                  className="text-emerald-400 hover:text-emerald-600 flex-shrink-0"
                 >
-                  <X size={14} />
+                  <X size={12} />
                 </button>
               </div>
-              <div className="flex items-center justify-between px-4 py-3 gap-3">
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-gray-800 truncate">{pendingFile.name}</p>
-                  <p className="text-xs text-gray-400">{(pendingFile.size / 1024).toFixed(0)} KB</p>
-                </div>
-                <button
-                  onClick={handleUpload}
-                  disabled={uploading}
-                  className="flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gold-500 text-white text-sm font-semibold hover:bg-gold-600 disabled:opacity-60 transition-colors"
-                >
-                  {uploading ? <><Loader2 size={14} className="animate-spin" /> Uploading…</> : <>Upload Image</>}
-                </button>
-              </div>
-            </div>
-          )}
+            )}
 
-        </div>
+            <label className="flex items-center gap-2.5 text-sm text-gray-600 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={isPrimary}
+                onChange={(e) => setIsPrimary(e.target.checked)}
+                className="w-4 h-4 rounded accent-gold-500"
+              />
+              Set as primary image
+            </label>
 
-        {/* Hidden file input */}
-        <input ref={fileRef} type="file" accept=".jpg,.jpeg,.png,.webp" className="hidden" onChange={handleFileChange} />
-
-      </div>
-
-      {/* ── Confirm Delete ── */}
-      {confirmAction?.type === 'delete' && (
-        <ConfirmModal
-          message="Delete this image? This cannot be undone."
-          onConfirm={() => handleDelete(confirmAction.id)}
-          onClose={() => setConfirmAction(null)}
-          loading={deletingId === confirmAction.id}
-        />
-      )}
-
-      {/* ── Confirm Set Primary ── */}
-      {confirmAction?.type === 'primary' && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="p-2.5 rounded-xl bg-gold-50 flex-shrink-0"><Star size={20} className="text-gold-500" /></div>
-              <div>
-                <h3 className="font-semibold text-gray-900 text-sm">Set as Primary Image</h3>
-                <p className="text-sm text-gray-500 mt-1">This image will be shown as the main photo for this chalet.</p>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <button onClick={() => setConfirmAction(null)} className="flex-1 px-4 py-2 text-sm rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">Cancel</button>
-              <button
-                onClick={() => handleSetPrimary(confirmAction.id)}
-                disabled={!!settingPrimaryId}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm rounded-xl bg-gold-500 text-white hover:bg-gold-600 disabled:opacity-50 transition-colors font-medium"
-              >
-                {settingPrimaryId ? <Loader2 size={13} className="animate-spin" /> : <Star size={13} />} Set Primary
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={handleUpload}
+              disabled={!selectedFile || uploading}
+              className="w-full flex items-center justify-center gap-2 py-3 text-sm rounded-xl font-semibold transition-colors
+                bg-gold-500 text-white hover:bg-gold-600
+                disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {uploading
+                ? <><Loader2 size={15} className="animate-spin" /> Uploading…</>
+                : <><Upload size={15} /> Upload Image</>}
+            </button>
           </div>
-        </div>
-      )}
 
+        </div>
+      </div>
     </div>
   );
 }
