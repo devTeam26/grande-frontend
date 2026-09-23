@@ -321,7 +321,16 @@ function ImageManager({ chaletId, chaletName, onClose }: { chaletId: string; cha
   const [uploading, setUploading]   = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [settingPrimaryId, setSettingPrimaryId] = useState<string | null>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl]   = useState<string | null>(null);
   const [confirmAction, setConfirmAction] = useState<{ type: 'delete' | 'primary'; id: string } | null>(null);
+
+  useEffect(() => {
+    if (!pendingFile) { setPreviewUrl(null); return; }
+    const url = URL.createObjectURL(pendingFile);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [pendingFile]);
 
   useEffect(() => {
     apiGetChalet(chaletId).then((data) => {
@@ -334,15 +343,17 @@ function ImageManager({ chaletId, chaletName, onClose }: { chaletId: string; cha
     const file = e.target.files?.[0];
     if (!file) return;
     e.target.value = '';
-    uploadFile(file);
+    setPendingFile(file);
   }
 
-  async function uploadFile(file: File) {
+  async function handleUpload() {
+    if (!pendingFile) return;
     setUploading(true);
-    const r = await apiUploadImage(chaletId, file, false);
+    const r = await apiUploadImage(chaletId, pendingFile, false);
     setUploading(false);
     if (r.success) {
       toast.success('Image uploaded');
+      setPendingFile(null);
       apiGetChalet(chaletId).then((data) => { if (data) setImages(data.images ?? []); });
     } else {
       toast.error(r.message || 'Upload failed');
@@ -406,7 +417,7 @@ function ImageManager({ chaletId, chaletName, onClose }: { chaletId: string; cha
             <div className="grid grid-cols-3 gap-3">
               {[1, 2, 3].map((i) => <div key={i} className="aspect-video rounded-xl bg-gray-100 animate-pulse" />)}
             </div>
-          ) : sorted.length === 0 ? (
+          ) : sorted.length === 0 && !pendingFile ? (
             <div
               onClick={() => fileRef.current?.click()}
               className="flex flex-col items-center justify-center gap-3 py-14 border-2 border-dashed border-gray-200 rounded-2xl text-gray-400 cursor-pointer hover:border-gold-400 hover:text-gold-500 hover:bg-gold-50/30 transition-colors"
@@ -456,12 +467,42 @@ function ImageManager({ chaletId, chaletName, onClose }: { chaletId: string; cha
               {/* Add photo slot */}
               <button
                 onClick={() => fileRef.current?.click()}
-                disabled={uploading}
-                className="aspect-video rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-gold-400 hover:text-gold-500 hover:bg-gold-50/30 disabled:opacity-60 transition-colors"
+                className="aspect-video rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-gold-400 hover:text-gold-500 hover:bg-gold-50/30 transition-colors"
               >
-                {uploading ? <Loader2 size={24} className="animate-spin text-gold-400" /> : <Plus size={24} />}
-                <span className="text-xs font-semibold">{uploading ? 'Uploading…' : 'Add Photo'}</span>
+                <Plus size={24} />
+                <span className="text-xs font-semibold">Add Photo</span>
               </button>
+            </div>
+          )}
+
+          {/* ── Preview + Upload (appears only when file is chosen) ── */}
+          {previewUrl && pendingFile && (
+            <div className="rounded-2xl border border-gray-200 overflow-hidden bg-gray-50 shadow-sm">
+              <div className="relative">
+                <img src={previewUrl} alt="Preview" className="w-full max-h-56 object-cover" />
+                <span className="absolute top-2 start-2 bg-navy-800 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+                  Preview
+                </span>
+                <button
+                  onClick={() => setPendingFile(null)}
+                  className="absolute top-2 end-2 p-1.5 bg-white/90 rounded-full text-gray-500 hover:text-red-500 shadow transition-colors"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+              <div className="flex items-center justify-between px-4 py-3 gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-gray-800 truncate">{pendingFile.name}</p>
+                  <p className="text-xs text-gray-400">{(pendingFile.size / 1024).toFixed(0)} KB</p>
+                </div>
+                <button
+                  onClick={handleUpload}
+                  disabled={uploading}
+                  className="flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gold-500 text-white text-sm font-semibold hover:bg-gold-600 disabled:opacity-60 transition-colors"
+                >
+                  {uploading ? <><Loader2 size={14} className="animate-spin" /> Uploading…</> : <>Upload Image</>}
+                </button>
+              </div>
             </div>
           )}
 
