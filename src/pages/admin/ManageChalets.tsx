@@ -330,20 +330,23 @@ function ImageManager({ chaletId, chaletName, onClose }: { chaletId: string; cha
     });
   }, [chaletId]);
 
-  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files ?? []);
-    if (!files.length) return;
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
     e.target.value = '';
+    uploadFile(file);
+  }
+
+  async function uploadFile(file: File) {
     setUploading(true);
-    let failed = 0;
-    for (const file of files) {
-      const r = await apiUploadImage(chaletId, file, false);
-      if (!r.success) { toast.error(r.message || 'Upload failed'); failed++; }
-    }
+    const r = await apiUploadImage(chaletId, file, false);
     setUploading(false);
-    const uploaded = files.length - failed;
-    if (uploaded > 0) toast.success(`${uploaded} image${uploaded > 1 ? 's' : ''} uploaded`);
-    apiGetChalet(chaletId).then((data) => { if (data) setImages(data.images ?? []); });
+    if (r.success) {
+      toast.success('Image uploaded');
+      apiGetChalet(chaletId).then((data) => { if (data) setImages(data.images ?? []); });
+    } else {
+      toast.error(r.message || 'Upload failed');
+    }
   }
 
   async function handleDelete(imageId: string) {
@@ -465,7 +468,7 @@ function ImageManager({ chaletId, chaletName, onClose }: { chaletId: string; cha
         </div>
 
         {/* Hidden file input */}
-        <input ref={fileRef} type="file" accept=".jpg,.jpeg,.png,.webp" multiple className="hidden" onChange={handleFileChange} />
+        <input ref={fileRef} type="file" accept=".jpg,.jpeg,.png,.webp" className="hidden" onChange={handleFileChange} />
 
       </div>
 
