@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Plus, Edit3, Trash2, RefreshCw, Building2, Package,
   X, Loader2, Star, BedDouble, Bath, Users,
-  AlertCircle, Search, ToggleLeft, ToggleRight, ImageIcon, DollarSign, Upload,
+  AlertCircle, Search, ToggleLeft, ToggleRight, ImageIcon, DollarSign,
 } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
@@ -320,7 +320,6 @@ function ImageManager({ chaletId, chaletName, onClose }: { chaletId: string; cha
   const [uploading, setUploading]       = useState(false);
   const [deletingId, setDeletingId]     = useState<string | null>(null);
   const [settingPrimaryId, setSettingPrimaryId] = useState<string | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isPrimary, setIsPrimary]       = useState(false);
   const [inputKey, setInputKey]         = useState(0);
 
@@ -333,14 +332,12 @@ function ImageManager({ chaletId, chaletName, onClose }: { chaletId: string; cha
 
   useEffect(() => { load(); }, [load]);
 
-  async function handleUpload() {
-    if (!selectedFile) return;
+  async function handleUpload(file: File) {
     setUploading(true);
-    const r = await apiUploadImage(chaletId, selectedFile, isPrimary);
+    const r = await apiUploadImage(chaletId, file, isPrimary);
     setUploading(false);
     if (r.success) {
       toast.success('Image uploaded');
-      setSelectedFile(null);
       setIsPrimary(false);
       setInputKey((k) => k + 1);
       load();
@@ -443,8 +440,12 @@ function ImageManager({ chaletId, chaletName, onClose }: { chaletId: string; cha
               key={inputKey}
               type="file"
               accept="image/*"
-              onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
-              className="block w-full text-sm text-gray-600 cursor-pointer
+              disabled={uploading}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) { setSelectedFile(file); handleUpload(file); }
+              }}
+              className="block w-full text-sm text-gray-600 cursor-pointer disabled:opacity-50
                 file:mr-4 file:py-2 file:px-4 file:cursor-pointer
                 file:rounded-lg file:border file:border-gray-200
                 file:text-sm file:font-medium
@@ -452,19 +453,10 @@ function ImageManager({ chaletId, chaletName, onClose }: { chaletId: string; cha
                 hover:file:bg-gray-50 file:transition-colors"
             />
 
-            {selectedFile && (
-              <div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 border border-emerald-100 rounded-lg">
-                <ImageIcon size={13} className="text-emerald-500 flex-shrink-0" />
-                <span className="text-xs text-emerald-700 truncate flex-1 font-medium">{selectedFile.name}</span>
-                <span className="text-xs text-emerald-500 flex-shrink-0">
-                  {(selectedFile.size / 1024).toFixed(0)} KB
-                </span>
-                <button
-                  onClick={() => { setSelectedFile(null); setInputKey((k) => k + 1); }}
-                  className="text-emerald-400 hover:text-emerald-600 flex-shrink-0"
-                >
-                  <X size={12} />
-                </button>
+            {uploading && (
+              <div className="flex items-center gap-2 px-3 py-2 bg-gold-50 border border-gold-100 rounded-lg">
+                <Loader2 size={13} className="text-gold-500 animate-spin flex-shrink-0" />
+                <span className="text-xs text-gold-700 font-medium">Uploading…</span>
               </div>
             )}
 
@@ -477,19 +469,6 @@ function ImageManager({ chaletId, chaletName, onClose }: { chaletId: string; cha
               />
               Set as primary image
             </label>
-
-            <button
-              type="button"
-              onClick={handleUpload}
-              disabled={!selectedFile || uploading}
-              className="w-full flex items-center justify-center gap-2 py-3 text-sm rounded-xl font-semibold transition-colors
-                bg-gold-500 text-white hover:bg-gold-600
-                disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              {uploading
-                ? <><Loader2 size={15} className="animate-spin" /> Uploading…</>
-                : <><Upload size={15} /> Upload Image</>}
-            </button>
           </div>
 
         </div>
