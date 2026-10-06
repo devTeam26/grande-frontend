@@ -11,9 +11,7 @@ import { registerWithAPI, googleLoginWithAPI, clearError } from '../store/slices
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 
-const GOOGLE_CONFIGURED = !!(import.meta.env.VITE_GOOGLE_CLIENT_ID as string);
-
-function GoogleButton({ onToken }: { onToken: (t: string) => void }) {
+function GoogleButton({ onToken, locale }: { onToken: (t: string) => void; locale: string }) {
   return (
     <div className="mb-5">
       <GoogleLogin
@@ -23,6 +21,7 @@ function GoogleButton({ onToken }: { onToken: (t: string) => void }) {
         text="signup_with"
         shape="rectangular"
         logo_alignment="center"
+        locale={locale}
       />
     </div>
   );
@@ -87,7 +86,7 @@ export function Register() {
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-7">
-          <GoogleButton onToken={handleGoogleToken} />
+          <GoogleButton onToken={handleGoogleToken} locale={i18n.language} />
           <div className="relative mb-5">
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-100" /></div>
             <div className="relative flex justify-center text-xs"><span className="bg-white px-3 text-gray-400">{t('auth.or')}</span></div>
