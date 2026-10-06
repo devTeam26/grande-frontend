@@ -93,15 +93,11 @@ export function Login() {
             </div>
           )}
 
-          {GOOGLE_CONFIGURED && (
-            <>
-              <GoogleButton onToken={handleGoogleToken} disabled={isLoading} />
-              <div className="relative mb-5">
-                <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-100" /></div>
-                <div className="relative flex justify-center text-xs"><span className="bg-white px-3 text-gray-400">{t('auth.or')}</span></div>
-              </div>
-            </>
-          )}
+          <GoogleButton onToken={handleGoogleToken} disabled={isLoading} />
+          <div className="relative mb-5">
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-100" /></div>
+            <div className="relative flex justify-center text-xs"><span className="bg-white px-3 text-gray-400">{t('auth.or')}</span></div>
+          </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <Input
