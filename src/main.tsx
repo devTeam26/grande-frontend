@@ -7,7 +7,7 @@ import './i18n';
 import './index.css';
 import App from './App';
 
-const GOOGLE_CLIENT_ID = (import.meta.env.VITE_GOOGLE_CLIENT_ID as string) ?? '';
+const GOOGLE_CLIENT_ID = (import.meta.env.VITE_GOOGLE_CLIENT_ID as string) || 'not-configured';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
