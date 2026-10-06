@@ -19,7 +19,7 @@ function GoogleButton({ onToken }: { onToken: (t: string) => void }) {
       <GoogleLogin
         onSuccess={(res) => { if (res.credential) onToken(res.credential); }}
         onError={() => {}}
-        width="100%"
+        width={400}
         text="signin_with"
         shape="rectangular"
         logo_alignment="center"
