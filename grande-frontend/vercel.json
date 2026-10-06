@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://api.grandebeach.com/api/:path*" },
+    { "source": "/uploads/:path*", "destination": "https://api.grandebeach.com/uploads/:path*" },
+    { "source": "/((?!api|uploads).*)", "destination": "/index.html" }
+  ]
+}

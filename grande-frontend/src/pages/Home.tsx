@@ -1,0 +1,1427 @@
+﻿import { useState, useRef, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Search, Star, Shield, Award, ChevronLeft, ChevronRight, MapPin, X, CheckCircle, Quote, Globe } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '../hooks/useAppSelector';
+import { ChaletCard } from '../components/chalets/ChaletCard';
+import { RequestModal } from '../components/booking/RequestModal';
+import { Button } from '../components/ui/Button';
+import { useAppDispatch } from '../hooks/useAppDispatch';
+import { setFilter, fetchChalets } from '../store/slices/chaletsSlice';
+import { localImagesForChalet } from '../data/chaletImages';
+import type { ChaletType } from '../types';
+import { getAllFacilityPhotos, type FacilityStore } from './admin/ManageFacilities';
+
+const API_BASE = (import.meta.env.VITE_API_BASE_URL as string) ?? '';
+
+interface HomeReview {
+  id: string;
+  chaletId: string;
+  chaletName: string;
+  guestName: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
+async function fetchHomeReviews(): Promise<HomeReview[]> {
+  try {
+    const res = await fetch(`${API_BASE}/api/reviews?page=1&pageSize=6`);
+    if (!res.ok) return [];
+    const json = await res.json() as { data?: { items?: HomeReview[] } };
+    return json.data?.items ?? [];
+  } catch { return []; }
+}
+import p01 from '../assets/IMG_20260615_131431641_HDR.jpg';
+import p02 from '../assets/IMG_20260615_133901366_HDR_AE.jpg';
+import p03 from '../assets/IMG_20260615_134043284_HDR_AE.jpg';
+import p04 from '../assets/IMG_20260615_134713430_HDR_AE.jpg';
+import p15 from '../assets/IMG_20260615_142620294_AE.jpg';
+import p16 from '../assets/IMG_20260615_142701336_HDR_AE.jpg';
+import p17 from '../assets/IMG_20260615_142832737_HDR_AE.jpg';
+import p18 from '../assets/IMG_20260615_143435850_HDR_AE.jpg';
+import p19 from '../assets/IMG_20260615_143526917_HDR_AE.jpg';
+import p20 from '../assets/IMG_20260615_143756774_HDR_AE.jpg';
+import p21 from '../assets/IMG_20260615_143832117_AE.jpg';
+import p22 from '../assets/IMG_20260615_143906030_HDR_AE.jpg';
+import p23 from '../assets/IMG_20260615_144243981_HDR_AE.jpg';
+import p24 from '../assets/IMG_20260615_144605495_HDR_AE.jpg';
+import p25 from '../assets/IMG_20260615_144805928_HDR_AE.jpg';
+import p26 from '../assets/IMG_20260615_144819154_HDR_AE.jpg';
+import p27 from '../assets/_A1A7962.jpg';
+import p28 from '../assets/_A1A7988.jpg';
+import p29 from '../assets/_A1A7991.jpg';
+import p30 from '../assets/_A1A8001.jpg';
+import p31 from '../assets/_A1A8031.jpg';
+import p32 from '../assets/_A1A8041.jpg';
+import p33 from '../assets/_A1A8045.jpg';
+import p34 from '../assets/_A1A8046.jpg';
+import p35 from '../assets/_A1A8091.jpg';
+import p36 from '../assets/_A1A8102.jpg';
+import p37 from '../assets/_A1A8104.jpg';
+import p38 from '../assets/_A1A8112.jpg';
+import p39 from '../assets/_A1A8119.jpg';
+import p40 from '../assets/_A1A8124.jpg';
+import p41 from '../assets/_A1A8126.jpg';
+import p42 from '../assets/_A1A8167.jpg';
+import p43 from '../assets/1.jpg';
+import p44 from '../assets/2.jpg';
+import p45 from '../assets/IMG_20260615_134736296_HDR_AE.jpg';
+import p46 from '../assets/5A1A8022.jpg';
+
+type TabCard = {
+  nameEn: string; nameAr: string;
+  descEn: string; descAr: string;
+  detailEn: string; detailAr: string;
+  img: string; imgs: string[];
+  mt: boolean;
+};
+
+const TAB_ITEMS: Record<'dining' | 'activities' | 'kuwait', TabCard[]> = {
+  dining: [
+    {
+      nameEn: 'Pool Bar', nameAr: 'بار المسبح', mt: false,
+      descEn: 'Cool refreshments and light bites by the pool — the perfect midday escape.',
+      descAr: 'مشروبات منعشة ووجبات خفيفة بجانب المسبح.',
+      detailEn: 'Unwind at our poolside bar where handcrafted cocktails, fresh juices and light bites are served throughout the day. Lounge on a sun chair, dip your feet in the water and let the Gulf breeze carry your worries away. Open daily 10 AM – 10 PM.',
+      detailAr: 'استرخِ في بارنا بجانب المسبح حيث تُقدَّم الكوكتيلات المصنوعة يدوياً والعصائر الطازجة والوجبات الخفيفة طوال اليوم. مفتوح يومياً من 10 ص حتى 10 م.',
+      img: p15,
+      imgs: [p15, p16, p17],
+    },
+    {
+      nameEn: 'Beach Café', nameAr: 'كافيه الشاطئ', mt: true,
+      descEn: 'Sip your morning coffee with a panoramic Gulf view and soft sea breeze.',
+      descAr: 'احتسِ قهوة صباحك مع إطلالة بانورامية على الخليج.',
+      detailEn: 'Start your morning at the Beach Café with premium arabica coffee, fresh pastries and light breakfast options — all with a panoramic Arabian Gulf view. Whether you prefer a quiet corner or a beach-facing seat, every sip is a luxury. Open daily from 7 AM.',
+      detailAr: 'ابدأ صباحك في كافيه الشاطئ مع قهوة عربية فاخرة ومعجنات طازجة وخيارات إفطار خفيفة مع إطلالة على الخليج. مفتوح يومياً من الساعة 7 صباحاً.',
+      img: p18,
+      imgs: [p18, p19, p20],
+    },
+    {
+      nameEn: 'Rooftop Dining', nameAr: 'طعام على السطح', mt: false,
+      descEn: 'Elevated cuisine and cocktails overlooking the Gulf at sunset.',
+      descAr: 'مأكولات راقية بإطلالة على الخليج عند الغروب.',
+      detailEn: 'Dine under the stars at our signature rooftop restaurant, where international and Kuwaiti cuisine meets breathtaking Gulf views. A curated cocktail menu accompanies every dish. Reservations recommended. Open evenings 7 PM – midnight.',
+      detailAr: 'تناول العشاء تحت النجوم في مطعمنا على السطح حيث تلتقي المطبخ الدولي والكويتي بإطلالات خلابة على الخليج. يُنصح بالحجز المسبق. مفتوح مساءً من 7 م حتى منتصف الليل.',
+      img: p21,
+      imgs: [p21, p22, p23],
+    },
+    {
+      nameEn: 'Family BBQ', nameAr: 'شواء عائلي', mt: true,
+      descEn: 'Weekend BBQ nights bring families together under open skies.',
+      descAr: 'ليالي الشواء تجمع العائلات تحت سماء مفتوحة.',
+      detailEn: 'Friday and Saturday evenings come alive with our family BBQ nights — fresh grills, mezze spreads and live Arabic music in a relaxed outdoor setting. A beloved Grande Beach tradition. From 6 PM every weekend.',
+      detailAr: 'تحيا ليالي الجمعة والسبت مع ليالي الشواء العائلية — مشويات طازجة ومزة غنية وموسيقى عربية في أجواء خارجية مريحة. من الساعة 6 مساءً كل نهاية أسبوع.',
+      img: p24,
+      imgs: [p24, p25, p26],
+    },
+  ],
+  activities: [
+    {
+      nameEn: 'Swimming Pool', nameAr: 'مسبح خاص', mt: false,
+      descEn: 'Open year-round, heated and maintained for guests of all ages.',
+      descAr: 'مفتوح طوال العام، مدفأ لجميع الأعمار.',
+      detailEn: 'Our resort pools are open 365 days a year, maintained at the perfect temperature year-round. Children\'s shallow sections, sun loungers and towel service are all included. Pool hours: 8 AM – 10 PM daily.',
+      detailAr: 'مسابح منتجعنا مفتوحة 365 يوماً في السنة وتُحافَظ على درجة الحرارة المثالية. تشمل أقسام للأطفال وكراسي الشمس وخدمة المناشف. ساعات المسبح: 8 ص – 10 م يومياً.',
+      img: p27,
+      imgs: [p27, p28, p29],
+    },
+    {
+      nameEn: 'Beach Volleyball', nameAr: 'كرة الشاطئ', mt: true,
+      descEn: 'Friendly matches on pristine sand courts right on the waterfront.',
+      descAr: 'مباريات ودية على ملاعب رمل نظيفة على الشاطئ.',
+      detailEn: 'Challenge friends and family to a match on our dedicated beachfront volleyball courts. Equipment is available free of charge at the activities desk. Organised tournaments are held every Friday morning — all skill levels welcome.',
+      detailAr: 'تحدَّ أصدقاءك وعائلتك في ملاعب كرة الشاطئ المخصصة على الواجهة البحرية. المعدات متاحة مجاناً من مكتب الأنشطة. تُقام بطولات كل جمعة صباحاً لجميع المستويات.',
+      img: p30,
+      imgs: [p30, p31, p32],
+    },
+    {
+      nameEn: 'Water Sports', nameAr: 'رياضات مائية', mt: false,
+      descEn: 'Jet skiing, kayaking and paddleboarding on the Arabian Gulf.',
+      descAr: 'تزلج مائي وكياك في مياه الخليج العربي الدافئة.',
+      detailEn: 'Ride the waves of the Arabian Gulf with our range of water sports — from jet skis to kayaks and stand-up paddleboards. Certified instructors are available for beginners. Equipment rental charged per hour from the beach hut.',
+      detailAr: 'ركب أمواج الخليج العربي مع مجموعتنا من الرياضات المائية — من الجت سكي إلى الكياك وألواح التجديف. مدربون معتمدون للمبتدئين. التأجير بالساعة من كوخ الشاطئ.',
+      img: p33,
+      imgs: [p33, p34, p35],
+    },
+    {
+      nameEn: 'Fitness Centre', nameAr: 'مركز اللياقة', mt: true,
+      descEn: 'A fully equipped gym with sea views to keep you energized.',
+      descAr: 'صالة رياضية متكاملة بإطلالة على البحر.',
+      detailEn: 'Stay in peak condition at our fully equipped fitness centre featuring state-of-the-art cardio machines, free weights and resistance equipment — all with panoramic sea views. Personal training sessions available on request. Open 6 AM – 11 PM daily.',
+      detailAr: 'ابقَ في أفضل حالاتك في مركز اللياقة المجهز بالكامل بأحدث أجهزة الكارديو والأثقال الحرة ومعدات المقاومة مع إطلالات بحرية. جلسات التدريب الشخصي متاحة عند الطلب. مفتوح 6 ص – 11 م يومياً.',
+      img: p36,
+      imgs: [p36, p37, p38],
+    },
+  ],
+  kuwait: [
+    {
+      nameEn: 'Kuwait Towers', nameAr: 'أبراج الكويت', mt: false,
+      descEn: 'The iconic symbol of modern Kuwait rising above the Gulf coast.',
+      descAr: 'الرمز الشهير لكويت الحديثة يرتفع فوق ساحل الخليج.',
+      detailEn: 'Rising majestically above Kuwait Bay, the Kuwait Towers are the most recognisable landmark in the country. The main tower houses a revolving observation deck and restaurant offering 360° views of the city and the Gulf. Just 88 km from Grande Beach Khairan.',
+      detailAr: 'ترتفع أبراج الكويت بشموخ فوق خليج الكويت وهي المعلم الأكثر شهرة في البلاد. تضم البرج الرئيسي منصة مراقبة دوارة ومطعماً يوفر إطلالات 360 درجة على المدينة والخليج. على بُعد 88 كم من غراند بيتش خيران.',
+      img: p39,
+      imgs: [p39, p40, p41],
+    },
+    {
+      nameEn: 'Scientific Center', nameAr: 'المركز العلمي', mt: true,
+      descEn: "The Middle East's largest aquarium and world-class IMAX experience.",
+      descAr: 'أكبر أكواريوم في الشرق الأوسط وتجربة IMAX عالمية.',
+      detailEn: "Kuwait's Scientific Center is home to the largest aquarium in the Middle East, a natural history museum and an IMAX theatre. Discover marine life from the Arabian Gulf up close. Open Sun–Thu 9 AM–9 PM, Fri–Sat 2–10 PM.",
+      detailAr: 'يضم المركز العلمي الكويتي أكبر أكواريوم في الشرق الأوسط ومتحفاً للتاريخ الطبيعي ومسرح IMAX. مفتوح أحد–خميس 9 ص–9 م، جمعة–سبت 2–10 م.',
+      img: p42,
+      imgs: [p42, p43, p44],
+    },
+    {
+      nameEn: 'Al Mubarakiya Souq', nameAr: 'سوق المباركية', mt: false,
+      descEn: "Kuwait's oldest marketplace — rich with spices, handicrafts and heritage.",
+      descAr: 'أقدم أسواق الكويت، يزخر بالتوابل والحرف والموروث الأصيل.',
+      detailEn: "Al Mubarakiya is Kuwait City's oldest market, dating back over a century. Wander through alleys lined with spice sellers, traditional jewellery, handwoven textiles, dates and local sweets. Open 8 AM–1 PM and 4–10 PM.",
+      detailAr: 'سوق المباركية هو أقدم وأعرق أسواق الكويت. تجول في أزقته المليئة بالتوابل والمجوهرات التقليدية والأقمشة المنسوجة يدوياً والحلويات المحلية. مفتوح 8 ص–1 م و4–10 م.',
+      img: p45,
+      imgs: [p45, p46, p01],
+    },
+    {
+      nameEn: 'Al Kout Mall', nameAr: 'مول الكوت', mt: true,
+      descEn: 'Waterfront shopping and dining just 20 minutes from Grande Beach Khairan.',
+      descAr: 'تسوق وطعام على الواجهة البحرية على بُعد 20 دقيقة فقط.',
+      detailEn: "Al Kout Mall is one of Kuwait's premier waterfront shopping destinations, featuring over 200 retail stores, a multiplex cinema, and a marina-side promenade lined with international restaurants. Located in Fahaheel, just 20 minutes from Grande Beach.",
+      detailAr: 'مول الكوت هو أحد أبرز وجهات التسوق على الواجهة البحرية في الكويت، ويضم أكثر من 200 متجر وسينما متعددة القاعات وكورنيش المارينا. يقع في الفحيحيل على بُعد 20 دقيقة من غراند بيتش.',
+      img: p02,
+      imgs: [p02, p03, p04],
+    },
+  ],
+};
+
+// Replace each URL below with your actual CDN photo URLs (3 photos per card for the modal carousel)
+const FACILITY_AREAS: (TabCard & { key: string })[] = [
+  {
+    key: 'indoor',
+    nameEn: 'Indoor', nameAr: 'داخلي', mt: false,
+    descEn: 'Elegantly furnished living spaces, master bedrooms and fully equipped kitchens crafted for comfort.',
+    descAr: 'مساحات معيشة مزينة بأناقة وغرف نوم رئيسية ومطابخ مجهزة بالكامل صممت للراحة.',
+    detailEn: 'Our indoor spaces blend contemporary design with Kuwaiti warmth — from handpicked furnishings and ambient lighting to king-sized beds dressed in Egyptian cotton and professional-grade kitchen appliances.',
+    detailAr: 'تجمع مساحاتنا الداخلية بين التصميم المعاصر ودفء الضيافة الكويتية — من الأثاث المختار بعناية والإضاءة المحيطة إلى أسرة كينج مغطاة بالقطن المصري والأجهزة المطبخية الاحترافية.',
+    img: 'https://cdn.grandebeach.com/facilities/indoor/1.jpg',
+    imgs: ['https://cdn.grandebeach.com/facilities/indoor/1.jpg', 'https://cdn.grandebeach.com/facilities/indoor/2.jpg', 'https://cdn.grandebeach.com/facilities/indoor/3.jpg'],
+  },
+  {
+    key: 'kids',
+    nameEn: 'Kids Area', nameAr: 'منطقة الأطفال', mt: false,
+    descEn: 'A safe, fun-filled zone with a shallow pool, outdoor play equipment and an indoor game room.',
+    descAr: 'منطقة آمنة ومليئة بالمرح مع مسبح ضحل وملاعب خارجية وغرفة ألعاب داخلية.',
+    detailEn: 'Dedicated entirely to younger guests — our kids area features a heated shallow pool with colourful floats, a rubber-cushioned outdoor play zone with slides and swings, and an indoor game room with console and table games. All supervised daily.',
+    detailAr: 'مخصصة بالكامل للضيوف الصغار — تضم منطقة الأطفال مسبحاً ضحلاً مدفأً مع عوامات ملونة وملعب خارجي مطاطي مع زحاليق وأراجيح وغرفة ألعاب داخلية. مع الإشراف اليومي.',
+    img: 'https://cdn.grandebeach.com/facilities/kids/1.jpg',
+    imgs: ['https://cdn.grandebeach.com/facilities/kids/1.jpg', 'https://cdn.grandebeach.com/facilities/kids/2.jpg', 'https://cdn.grandebeach.com/facilities/kids/3.jpg'],
+  },
+  {
+    key: 'reception',
+    nameEn: 'Reception', nameAr: 'الاستقبال', mt: false,
+    descEn: 'A grand lobby, swift personalised check-in and a welcoming lounge with Gulf views.',
+    descAr: 'بهو فخم وتسجيل وصول سريع وشخصي وصالة ترحيب مطلة على الخليج.',
+    detailEn: 'Step into soaring ceilings, marble floors and a centrepiece that frames the Gulf view. Our concierge team is on hand 24/7 — digital pre-registration means most guests are in their chalet within minutes of arrival.',
+    detailAr: 'ادخل إلى أسقف شامخة وأرضيات رخامية وتحفة تؤطر إطلالة الخليج. فريق الكونسيرج متاح 24/7 — التسجيل الرقمي المسبق يعني أن معظم الضيوف يصلون شاليههم في دقائق.',
+    img: 'https://cdn.grandebeach.com/facilities/reception/1.jpg',
+    imgs: ['https://cdn.grandebeach.com/facilities/reception/1.jpg', 'https://cdn.grandebeach.com/facilities/reception/2.jpg', 'https://cdn.grandebeach.com/facilities/reception/3.jpg'],
+  },
+  {
+    key: 'outdoor',
+    nameEn: 'Outdoor', nameAr: 'خارجي', mt: false,
+    descEn: 'Private beach, infinity pool and lush garden terraces overlooking the Arabian Gulf.',
+    descAr: 'شاطئ خاص ومسبح لانهائي وشرفات حديقة خضراء تطل على الخليج العربي.',
+    detailEn: 'Over 500 metres of private beachfront with sun loungers and towel service, a heated infinity pool that flows into the Gulf horizon, and beautifully landscaped gardens with shaded pergola walkways.',
+    detailAr: 'أكثر من 500 متر من الشاطئ الخاص مع كراسي الشمس وخدمة المناشف، ومسبح لانهائي مدفأ يتدفق نحو أفق الخليج، وحدائق جميلة مع ممرات بيرغولا مظللة.',
+    img: 'https://cdn.grandebeach.com/facilities/outdoor/1.jpg',
+    imgs: ['https://cdn.grandebeach.com/facilities/outdoor/1.jpg', 'https://cdn.grandebeach.com/facilities/outdoor/2.jpg', 'https://cdn.grandebeach.com/facilities/outdoor/3.jpg'],
+  },
+];
+
+export function Home() {
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const lang = i18n.language as 'en' | 'ar';
+
+  const chalets   = useAppSelector((s) => s.chalets.chalets);
+  const isLoading = useAppSelector((s) => s.chalets.isLoading);
+
+  useEffect(() => {
+    if (!chalets.length && !isLoading) dispatch(fetchChalets());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch]);
+
+  const [typeFilter, setTypeFilter] = useState<'all' | ChaletType>('all');
+  const [unitFilter, setUnitFilter] = useState<string | null>(null); // chalet.id
+
+  const naturalSort = (a: { name: { en: string } }, b: { name: { en: string } }) =>
+    a.name.en.localeCompare(b.name.en, undefined, { numeric: true, sensitivity: 'base' });
+
+  const TYPE_ORDER: Record<string, number> = { normal: 0, superior: 1, vip: 2 };
+  const byType = typeFilter === 'all' ? chalets : chalets.filter((c) => c.type === typeFilter);
+  const displayChalets = unitFilter
+    ? chalets.filter((c) => c.id === unitFilter)
+    : [...byType].sort((a, b) =>
+        (TYPE_ORDER[a.type] ?? 3) - (TYPE_ORDER[b.type] ?? 3) || naturalSort(a, b),
+      );
+
+  function handleUnitClick(chaletId: string) {
+    if (unitFilter === chaletId) { setUnitFilter(null); return; }
+    setUnitFilter(chaletId);
+    setTypeFilter('all');
+  }
+
+  function handleTypeClick(key: 'all' | ChaletType) {
+    setTypeFilter(key);
+    setUnitFilter(null);
+  }
+
+  const [homeReviews, setHomeReviews] = useState<HomeReview[]>([]);
+  useEffect(() => { fetchHomeReviews().then(setHomeReviews); }, []);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = true;
+    const tryPlay = () => { v.play().catch(() => {}); };
+    tryPlay();
+    v.addEventListener('canplay', tryPlay);
+    v.addEventListener('loadedmetadata', tryPlay);
+    return () => {
+      v.removeEventListener('canplay', tryPlay);
+      v.removeEventListener('loadedmetadata', tryPlay);
+    };
+  }, []);
+
+  const [searchCheckIn, setSearchCheckIn] = useState('');
+  const [searchCheckOut, setSearchCheckOut] = useState('');
+  const [searchGuests, setSearchGuests] = useState('2');
+  const [sliderIdx, setSliderIdx] = useState(0);
+  const [activeTab, setActiveTab] = useState<'dining' | 'activities' | 'kuwait'>('dining');
+  const [modalCard, setModalCard] = useState<TabCard | null>(null);
+  const [requestChalet, setRequestChalet] = useState<{ id: string; name: string } | null>(null);
+  const [modalPhotoIdx, setModalPhotoIdx] = useState(0);
+  const videoRef       = useRef<HTMLVideoElement>(null);
+  const diningRef      = useRef<HTMLDivElement>(null);
+  const activitiesRef  = useRef<HTMLDivElement>(null);
+  const kuwaitRef      = useRef<HTMLDivElement>(null);
+
+  function scrollTab(dir: 'left' | 'right') {
+    const el = (activeTab === 'dining' ? diningRef : activeTab === 'activities' ? activitiesRef : kuwaitRef).current;
+    if (!el) return;
+    el.scrollBy({ left: dir === 'left' ? -285 : 285, behavior: 'smooth' });
+  }
+  const slides = chalets.slice(0, 6);
+
+  const [facilityStore, setFacilityStore] = useState<FacilityStore | null>(null);
+  useEffect(() => { getAllFacilityPhotos().then(setFacilityStore).catch(() => {}); }, []);
+
+  const facilityAreas = FACILITY_AREAS.map((area) => {
+    const photos = (facilityStore?.[area.key as keyof FacilityStore] ?? []).filter(Boolean);
+    if (!photos.length) return area;
+    return { ...area, img: photos[0], imgs: photos };
+  });
+
+  function handleSearch() {
+    if (searchCheckIn) dispatch(setFilter({ key: 'checkIn', value: searchCheckIn }));
+    if (searchCheckOut) dispatch(setFilter({ key: 'checkOut', value: searchCheckOut }));
+    if (searchGuests) dispatch(setFilter({ key: 'guests', value: Number(searchGuests) }));
+    navigate('/chalets');
+  }
+
+  const features = [
+    { icon: CheckCircle, title: { en: 'Online Booking Request', ar: 'طلب حجز أونلاين' }, desc: { en: 'Submit your booking request in minutes — our team reviews and confirms it directly.', ar: 'أرسل طلب حجزك في دقائق ويقوم فريقنا بمراجعته وتأكيده مباشرة.' } },
+    { icon: Shield, title: { en: 'Identity Verification', ar: 'التحقق من الهوية' }, desc: { en: 'Guests submit their ID, selfie and digital signature for a safe and verified stay.', ar: 'يقدّم الضيوف هويتهم وصورتهم وتوقيعهم الرقمي لإقامة آمنة وموثّقة.' } },
+    { icon: Award, title: { en: 'Loyalty Points', ar: 'نقاط الولاء' }, desc: { en: 'Earn points with every stay and unlock Bronze, Silver, Gold and Platinum tiers.', ar: 'اكسب نقاطاً مع كل إقامة وارقَ بين مستويات البرونز والفضة والذهب والبلاتين.' } },
+    { icon: Globe, title: { en: 'Arabic & English', ar: 'عربي وإنجليزي' }, desc: { en: 'Fully bilingual platform — switch between Arabic and English at any time.', ar: 'منصة ثنائية اللغة بالكامل — انتقل بين العربية والإنجليزية في أي وقت.' } },
+  ];
+
+  return (
+    <div>
+      {/* Hero */}
+      <section className="relative min-h-[720px] flex flex-col items-center justify-center overflow-hidden">
+        <video
+          ref={videoRef}
+          className="absolute inset-0 h-full w-full object-cover"
+          src="/IMG_8916.MP4"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+        />
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
+
+        {/* Centered title */}
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: 'easeOut' }}
+          >
+            <div className="inline-flex items-center gap-2 bg-gold-500/20 text-gold-300 text-sm font-medium px-4 py-2 rounded-full mb-6">
+              <MapPin size={14} /> GrandeBeach Khairan, Kuwait
+            </div>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-5">
+              {t('home.hero_title')}
+            </h1>
+            <p className="text-white/80 text-lg leading-relaxed max-w-2xl mx-auto">
+              {t('home.hero_subtitle')}
+            </p>
+          </motion.div>
+        </div>
+
+        {/* Search bar – bottom center */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 0.35, ease: 'easeOut' }}
+          className="absolute bottom-8 left-0 right-0 px-4 z-10"
+        >
+          <div className="max-w-3xl mx-auto bg-white/95 backdrop-blur rounded-2xl p-4 shadow-2xl">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-gray-600">{t('home.hero_search_checkin')}</label>
+                <input
+                  type="date"
+                  value={searchCheckIn}
+                  min={new Date().toISOString().split('T')[0]}
+                  onChange={(e) => setSearchCheckIn(e.target.value)}
+                  className="rounded-xl border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-gray-600">{t('home.hero_search_checkout')}</label>
+                <input
+                  type="date"
+                  value={searchCheckOut}
+                  min={searchCheckIn || new Date().toISOString().split('T')[0]}
+                  onChange={(e) => setSearchCheckOut(e.target.value)}
+                  className="rounded-xl border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-gray-600">{t('home.hero_search_guests')}</label>
+                <select
+                  value={searchGuests}
+                  onChange={(e) => setSearchGuests(e.target.value)}
+                  className="rounded-xl border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400"
+                >
+                  {[1,2,4,6,8,10,12,14,16,18,20].map((n) => (
+                    <option key={n} value={n}>{n}+ {t('chalets.guests')}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <Button onClick={handleSearch} fullWidth size="lg" className="gap-2">
+              <Search size={18} />
+              {t('home.hero_search_btn')}
+            </Button>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Stats bar */}
+      <div data-aos="fade-up" className="bg-gold-500 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+            {[
+              { value: '10', label: { en: 'Chalets & Resorts', ar: 'شاليه وفيلا' } },
+              { value: '500+', label: { en: 'Happy Guests', ar: 'ضيف سعيد' } },
+              { value: '4.8', label: { en: 'Average Rating', ar: 'متوسط التقييم' } },
+              { value: '3', label: { en: 'Payment Options', ar: 'خيار دفع' } },
+            ].map((s) => (
+              <div key={s.value} className="text-white">
+                <p className="text-2xl font-bold">{s.value}</p>
+                <p className="text-gold-100 text-sm">{s.label[lang]}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Featured chalets */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+
+        {/* Header */}
+        <div className="flex items-end justify-between mb-8">
+          <div>
+            <h2 className="text-3xl font-bold text-gray-900">{t('home.featured_title')}</h2>
+            <p className="text-gray-500 mt-2">{t('home.featured_subtitle')}</p>
+          </div>
+          <Link to="/chalets" className="hidden sm:flex items-center gap-1 text-gold-600 hover:text-gold-700 font-medium text-sm">
+            {lang === 'ar' ? 'عرض الكل' : 'View All'} <ChevronRight size={16} />
+          </Link>
+        </div>
+
+        {/* ── Inventory panel ── */}
+        <div data-aos="fade-up" className="bg-white rounded-3xl border border-gray-100 shadow-md p-6 mb-10">
+          {/* Panel header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">
+                {lang === 'ar' ? 'استعرض الوحدات' : 'Browse Units'}
+              </h3>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {lang === 'ar' ? 'اختر وحدة لعرض تفاصيلها' : 'Select a unit to view its details'}
+              </p>
+            </div>
+
+            {/* Type filter pills */}
+            <div className="flex items-center gap-1.5 bg-gray-100 rounded-full p-1 self-start sm:self-auto">
+              {([
+                { key: 'all',      label: lang === 'ar' ? 'الكل' : 'All' },
+                { key: 'normal',   label: lang === 'ar' ? 'قياسي' : 'Standard' },
+                { key: 'superior', label: lang === 'ar' ? 'سوبيريور' : 'Superior' },
+                { key: 'vip',      label: 'VIP' },
+              ] as const).map(({ key, label }) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => handleTypeClick(key)}
+                  className={`relative px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 ${
+                    typeFilter === key && !unitFilter
+                      ? 'text-gold-600 shadow-sm'
+                      : 'text-gray-500 hover:text-gold-600 hover:shadow-sm'
+                  }`}
+                >
+                  {typeFilter === key && !unitFilter && (
+                    <motion.span
+                      layoutId="home-type-pill"
+                      className="absolute inset-0 rounded-full bg-navy-800"
+                      style={{ zIndex: -1 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                    />
+                  )}
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Unit chips */}
+          <AnimatePresence mode="popLayout">
+            <div className="space-y-4">
+              {/* Standard row */}
+              {(typeFilter === 'all' || typeFilter === 'normal') && chalets.some((c) => c.type === 'normal') && (
+                <motion.div
+                  key="standard-row"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.25 }}
+                >
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">
+                    {lang === 'ar' ? 'ستاندرد' : 'Standard'}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {[...chalets.filter((c) => c.type === 'normal')].sort(naturalSort).map((c) => {
+                      const active = unitFilter === c.id;
+                      return (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => handleUnitClick(c.id)}
+                          className={`group flex flex-col items-center justify-center w-[88px] h-[80px] rounded-2xl border-2 transition-all duration-200 ${
+                            active
+                              ? 'bg-gray-800 border-gray-800 shadow-lg shadow-gray-200'
+                              : 'bg-gray-50 border-gray-200 hover:border-gray-400 hover:bg-gray-100'
+                          }`}
+                        >
+                          <span className={`text-sm font-medium ${active ? 'text-white' : 'text-gray-700'}`}>{c.name.en}</span>
+                          <span className={`text-[10px] font-medium mt-0.5 ${active ? 'text-gray-300' : 'text-gray-400'}`}>{c.basePrice} KWD</span>
+                          <span className={`text-[9px] mt-0.5 flex items-center gap-0.5 ${active ? 'text-emerald-300' : 'text-emerald-500'}`}>
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                            {c.isAvailable ? (lang === 'ar' ? 'متاح' : 'Avail') : (lang === 'ar' ? 'محجوز' : 'Booked')}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Superior row */}
+              {(typeFilter === 'all' || typeFilter === 'superior') && chalets.some((c) => c.type === 'superior') && (
+                <motion.div
+                  key="superior-row"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.25, delay: 0.05 }}
+                >
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gold-500 mb-2">
+                    {lang === 'ar' ? 'سوبيريور' : 'Superior'}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {[...chalets.filter((c) => c.type === 'superior')].sort(naturalSort).map((c) => {
+                      const active = unitFilter === c.id;
+                      return (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => handleUnitClick(c.id)}
+                          className={`group flex flex-col items-center justify-center w-[88px] h-[80px] rounded-2xl border-2 transition-all duration-200 ${
+                            active
+                              ? 'bg-gold-500 border-gold-500 shadow-lg shadow-gold-100'
+                              : 'bg-gold-50 border-gold-200 hover:border-gold-400 hover:bg-gold-100'
+                          }`}
+                        >
+                          <span className={`text-sm font-medium ${active ? 'text-white' : 'text-gold-700'}`}>{c.name.en}</span>
+                          <span className={`text-[10px] font-medium mt-0.5 ${active ? 'text-gold-100' : 'text-gold-500'}`}>{c.basePrice} KWD</span>
+                          <span className={`text-[9px] mt-0.5 flex items-center gap-0.5 ${active ? 'text-emerald-200' : 'text-emerald-500'}`}>
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                            {c.isAvailable ? (lang === 'ar' ? 'متاح' : 'Avail') : (lang === 'ar' ? 'محجوز' : 'Booked')}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* VIP row */}
+              {(typeFilter === 'all' || typeFilter === 'vip') && chalets.some((c) => c.type === 'vip') && (
+                <motion.div
+                  key="vip-row"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.25, delay: 0.1 }}
+                >
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-navy-600 mb-2">VIP</p>
+                  <div className="flex flex-wrap gap-2">
+                    {[...chalets.filter((c) => c.type === 'vip')].sort(naturalSort).map((c) => {
+                      const active = unitFilter === c.id;
+                      return (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => handleUnitClick(c.id)}
+                          className={`group flex flex-col items-center justify-center w-[88px] h-[80px] rounded-2xl border-2 transition-all duration-200 ${
+                            active
+                              ? 'bg-navy-800 border-navy-800 shadow-lg shadow-navy-100'
+                              : 'bg-navy-50 border-navy-200 hover:border-navy-400 hover:bg-navy-100'
+                          }`}
+                        >
+                          <span className={`text-sm font-medium ${active ? 'text-white' : 'text-navy-700'}`}>{c.name.en}</span>
+                          <span className={`text-[10px] font-medium mt-0.5 ${active ? 'text-navy-200' : 'text-navy-500'}`}>{c.basePrice} KWD</span>
+                          <span className={`text-[9px] mt-0.5 flex items-center gap-0.5 ${active ? 'text-emerald-300' : 'text-emerald-500'}`}>
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                            {c.isAvailable ? (lang === 'ar' ? 'متاح' : 'Avail') : (lang === 'ar' ? 'محجوز' : 'Booked')}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          </AnimatePresence>
+
+          {/* Active filter indicator */}
+          {(unitFilter || typeFilter !== 'all') && (
+            <div className="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between">
+              <p className="text-xs text-gray-500">
+                {unitFilter
+                  ? (() => {
+                      const ch = chalets.find((c) => c.id === unitFilter);
+                      const name = ch ? (lang === 'ar' ? ch.name.ar : ch.name.en) : unitFilter;
+                      return lang === 'ar' ? `عرض الوحدة: ${name}` : `Showing unit: ${name}`;
+                    })()
+                  : (lang === 'ar' ? `عرض: ${typeFilter === 'normal' ? 'ستاندرد' : typeFilter === 'superior' ? 'سوبيريور' : 'VIP'}` : `Showing: ${typeFilter}`)}
+              </p>
+              <button
+                type="button"
+                onClick={() => { setUnitFilter(null); setTypeFilter('all'); }}
+                className="text-xs text-gold-600 hover:text-gold-700 font-medium flex items-center gap-1"
+              >
+                {lang === 'ar' ? 'مسح الفلتر' : 'Clear filter'} ×
+              </button>
+            </div>
+          )}
+        </div>
+
+
+
+        {/* Cards grid */}
+        <Link to="/chalets">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <AnimatePresence mode="popLayout">
+            {displayChalets.map((chalet, i) => {
+              const directions = [
+                { x: -80, y: 0 },
+                { x: 0,   y: 60 },
+                { x: 80,  y: 0 },
+              ];
+              const { x, y } = directions[i % 3];
+              return (
+                <motion.div
+                  key={chalet.id}
+                  layout
+                  initial={{ opacity: 0, x, y }}
+                  animate={{ opacity: 1, x: 0, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.92 }}
+                  transition={{ duration: 0.22, delay: i * 0.04 }}
+                >
+                  <ChaletCard chalet={chalet} />
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+
+        <div className="mt-8 text-center sm:hidden">
+          <Link to="/chalets">
+            <Button variant="outline">{t('home.cta_btn')}</Button>
+          </Link>
+        </div>
+        </Link>
+      </section>
+
+      {/* ── Chalet Showcase Slider ── */}
+      <section className="py-20 bg-white overflow-hidden">
+        <div className="text-center mb-10 px-4">
+          <p className="text-gold-500 text-[11px] font-bold tracking-[0.35em] uppercase mb-3">
+            {lang === 'ar' ? 'مجموعتنا' : 'Our Collection'}
+          </p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
+            {lang === 'ar' ? 'اكتشف إقامتك المثالية' : 'Discover Your Perfect Stay'}
+          </h2>
+          <p className="text-gray-400 mt-2 text-sm">
+            {lang === 'ar' ? 'انقر على بطاقة للتصفح' : 'Click any card to explore'}
+          </p>
+        </div>
+
+        {/* Slider track */}
+        <div className="relative flex items-center justify-center" style={{ height: 510 }}>
+          <AnimatePresence>
+            {slides.map((slide, i) => {
+              const offset = i - sliderIdx;
+              const absOff = Math.abs(offset);
+              if (absOff > 2) return null;
+              const isCenter = offset === 0;
+              return (
+                <motion.div
+                  key={slide.id}
+                  initial={{ x: offset * 250, opacity: 0, scale: 0.65 }}
+                  animate={{
+                    x: offset * 250,
+                    scale: isCenter ? 1 : Math.max(0.72, 1 - absOff * 0.14),
+                    opacity: isCenter ? 1 : Math.max(0.38, 1 - absOff * 0.25),
+                    zIndex: isCenter ? 20 : 10 - absOff,
+                  }}
+                  exit={{ opacity: 0, scale: 0.6, transition: { duration: 0.2 } }}
+                  transition={{ type: 'spring', stiffness: 280, damping: 28 }}
+                  className="absolute"
+                  onClick={() => !isCenter && setSliderIdx(i)}
+                  style={{ cursor: isCenter ? 'default' : 'pointer' }}
+                >
+                  {isCenter ? (
+                    <div className="w-[272px]">
+                      <div className="rounded-t-2xl overflow-hidden shadow-2xl">
+                        <img
+                          src={slide.images[0]}
+                          alt={slide.name[lang]}
+                          className="w-full h-[200px] object-cover"
+                        />
+                      </div>
+                      <div className="bg-white rounded-b-2xl shadow-2xl p-5 text-center">
+                        <h3 className="font-bold text-gray-900 text-sm uppercase tracking-[0.15em] mb-1.5">
+                          {slide.name[lang]}
+                        </h3>
+                        <div className="w-8 h-[1.5px] bg-gray-300 mx-auto mb-3" />
+                        <p className="text-xs text-gray-500 leading-relaxed line-clamp-3 mb-4">
+                          {slide.description[lang]}
+                        </p>
+                        <div className="flex gap-2">
+                          <Button fullWidth size="sm" onClick={() => setRequestChalet({ id: slide.id, name: slide.name[lang] })}>
+                            {lang === 'ar' ? 'اطلب الآن' : 'Request Now'}
+                          </Button>
+                          <Link to={`/chalets/${slide.id}`} className="flex-1">
+                            <Button fullWidth size="sm" variant="outline">
+                              {lang === 'ar' ? 'تفاصيل' : 'Details'}
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="w-[210px] select-none">
+                      <div className="rounded-2xl overflow-hidden shadow-lg">
+                        <img
+                          src={slide.images[0]}
+                          alt={slide.name[lang]}
+                          className="w-full h-[310px] object-cover"
+                        />
+                      </div>
+                      <p className="text-center text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-600 mt-3">
+                        {slide.name[lang]}
+                      </p>
+                    </div>
+                  )}
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+
+        {/* Navigation */}
+        <div className="flex items-center justify-center gap-5 mt-4 px-4">
+          <button
+            type="button"
+            onClick={() => setSliderIdx((v) => Math.max(0, v - 1))}
+            disabled={sliderIdx === 0}
+            className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:border-gray-900 hover:text-gray-900 disabled:opacity-30 transition-all"
+          >
+            <ChevronLeft size={18} />
+          </button>
+          <span className="text-sm font-semibold text-gray-800 w-12 text-center">
+            {sliderIdx + 1} / {slides.length}
+          </span>
+          <button
+            type="button"
+            onClick={() => setSliderIdx((v) => Math.min(slides.length - 1, v + 1))}
+            disabled={sliderIdx === slides.length - 1}
+            className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:border-gray-900 hover:text-gray-900 disabled:opacity-30 transition-all"
+          >
+            <ChevronRight size={18} />
+          </button>
+        </div>
+      </section>
+
+      {/* ── Resort Facilities ── */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div data-aos="fade-up" className="text-center mb-10">
+            <p className="text-gold-500 text-[11px] font-bold tracking-[0.35em] uppercase mb-3">
+              {lang === 'ar' ? 'مرافقنا' : 'Our Facilities'}
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
+              {lang === 'ar' ? 'استكشف كل ركن' : 'Explore Every Corner'}
+            </h2>
+            <p className="text-gray-400 mt-2 text-sm max-w-xl mx-auto">
+              {lang === 'ar'
+                ? 'من الغرف الداخلية الفاخرة إلى الشواطئ الخارجية الساحرة — كل تفصيل في غراند بيتش مصمم لإبهارك.'
+                : 'From luxurious indoor suites to breathtaking outdoor shores — every detail at Grande Beach is designed to impress.'}
+            </p>
+          </div>
+
+          <div data-aos="fade-up" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {facilityAreas.map(({ nameEn, nameAr, descEn, descAr, detailEn, detailAr, img, imgs }, i) => (
+              <motion.div
+                key={nameEn}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.08 }}
+                className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col"
+                onClick={() => { setModalCard({ nameEn, nameAr, descEn, descAr, detailEn, detailAr, img, imgs, mt: false }); setModalPhotoIdx(0); }}
+              >
+                <div className="relative overflow-hidden aspect-[4/3] bg-gray-100">
+                  <img
+                    src={img}
+                    alt={lang === 'ar' ? nameAr : nameEn}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="p-4 flex flex-col flex-1">
+                  <h3 className="font-semibold text-gray-900 text-base mb-1">{lang === 'ar' ? nameAr : nameEn}</h3>
+                  <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 mb-3 flex-1">{lang === 'ar' ? descAr : descEn}</p>
+                  <span className="text-[11px] text-gold-600 font-semibold">
+                    {lang === 'ar' ? 'عرض الصور ←' : '→ View Photos'}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Kuwait Parallax ── */}
+      <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('${p46}')` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/45 to-black/72" />
+        <motion.div
+          className="relative text-center px-6 max-w-4xl mx-auto"
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 1.1, ease: 'easeOut' }}
+        >
+          <p className="text-gold-300 text-[11px] font-bold tracking-[0.45em] uppercase mb-6">
+            Kuwait · Al Khiran · Arabian Gulf
+          </p>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+            {lang === 'ar' ? (
+              <>حيث يلتقي الصحراء<br />بالبحر</>
+            ) : (
+              <>Where the Desert<br />Meets the Sea</>
+            )}
+          </h2>
+          <p className="text-white/75 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
+            {lang === 'ar'
+              ? 'نستقبلك في واحة رفاهية على ساحل الكويت الجنوبي، حيث تلتقي المياه الفيروزية بالرمال الذهبية في أجواء تجمع بين الطبيعة الخلابة والخدمة الفاخرة.'
+              : "Nestled along Kuwait's pristine southern coastline, Grande Beach Khairan is a sanctuary where turquoise waters meet golden sands — a haven of luxury on the Arabian Gulf."}
+          </p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="mt-8 flex flex-wrap gap-3 justify-center"
+          >
+            {([
+              { en: '30 km Coastline', ar: '30 كم ساحل' },
+              { en: 'Private Beach',   ar: 'شاطئ خاص' },
+              { en: 'Crystal Waters',  ar: 'مياه شفافة' },
+              { en: 'Luxury Villas',   ar: 'فيلات فاخرة' },
+            ] as { en: string; ar: string }[]).map((item) => (
+              <span
+                key={item.en}
+                className="border border-white/30 bg-white/10 backdrop-blur-sm text-white/90 text-xs px-4 py-1.5 rounded-full font-medium"
+              >
+                {lang === 'ar' ? item.ar : item.en}
+              </span>
+            ))}
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* ── Kuwait Experience Tiles ── */}
+      <section>
+        <div className="grid grid-cols-1 md:grid-cols-3">
+          {([
+            {
+              img: p43,
+              titleEn: 'Private Beach',   titleAr: 'شاطئ خاص',
+              descEn: 'Your own slice of paradise. Soft sands, crystalline Gulf waters and uninterrupted horizon views — exclusively for Grande Beach guests.',
+              descAr: 'قطعتك الخاصة من الجنة. رمال ناعمة ومياه خليجية صافية وأفق لا نهاية له — حصرياً لضيوف غراند بيتش.',
+              emoji: '🏖',
+            },
+            {
+              img: p44,
+              titleEn: 'Luxury Chalets',  titleAr: 'شاليهات فاخرة',
+              descEn: 'From intimate Standard units to palatial VIP villas, each chalet blends Kuwaiti elegance with modern comfort.',
+              descAr: 'من الوحدات القياسية إلى فيلات VIP، كل شاليه يجمع بين الأناقة الكويتية والراحة الحديثة.',
+              emoji: '🏡',
+            },
+            {
+              img: p45,
+              titleEn: 'Khairan Sunsets', titleAr: 'غروب خيران',
+              descEn: 'Golden hues melt into the Arabian Gulf every evening at Khairan — a spectacle that never grows old.',
+              descAr: 'الألوان الذهبية تذوب في الخليج العربي كل مساء في خيران — مشهد لا يُمل أبداً.',
+              emoji: '🌅',
+            },
+          ] as { img: string; titleEn: string; titleAr: string; descEn: string; descAr: string; emoji: string }[]).map(
+            ({ img, titleEn, titleAr, descEn, descAr, emoji }) => (
+              <div key={titleEn} className="relative h-[460px] overflow-hidden group cursor-pointer">
+                <img
+                  src={img}
+                  alt={lang === 'ar' ? titleAr : titleEn}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent group-hover:via-black/40 transition-all duration-500" />
+                <div className="absolute bottom-0 left-0 right-0 p-7">
+                  <p className="text-2xl mb-2">{emoji}</p>
+                  <h3 className="text-white text-2xl font-bold leading-tight">
+                    {lang === 'ar' ? titleAr : titleEn}
+                  </h3>
+                  <p className="text-white text-sm leading-relaxed mt-2 opacity-0 group-hover:opacity-90 translate-y-3 group-hover:translate-y-0 transition-all duration-500">
+                    {lang === 'ar' ? descAr : descEn}
+                  </p>
+                  <div className="h-0.5 w-0 group-hover:w-10 bg-gold-400 transition-all duration-500 mt-3" />
+                </div>
+              </div>
+            ),
+          )}
+        </div>
+      </section>
+
+      {/* ── Dining & Experiences ── */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <p className="text-gold-500 text-[11px] font-bold tracking-[0.35em] uppercase mb-3">
+              {lang === 'ar' ? 'اكتشف المزيد' : 'Discover More'}
+            </p>
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900">
+              {lang === 'ar' ? 'المطاعم والتجارب' : 'Dining & Experiences'}
+            </h2>
+          </div>
+
+          {/* Tab nav */}
+          <div className="flex items-center justify-center gap-6 sm:gap-10 mb-12 border-b border-gray-100">
+            {([
+              { key: 'dining',     labelEn: 'Dining (4)',     labelAr: 'المطاعم (4)' },
+              { key: 'activities', labelEn: 'Activities (4)', labelAr: 'الأنشطة (4)' },
+              { key: 'kuwait',     labelEn: 'Kuwait (4)',     labelAr: 'الكويت (4)' },
+            ] as const).map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => setActiveTab(tab.key)}
+                className={`pb-3 text-xs font-bold tracking-[0.18em] uppercase border-b-2 -mb-px transition-all duration-200 ${
+                  activeTab === tab.key
+                    ? 'text-gray-900 border-gray-900'
+                    : 'text-gray-400 border-transparent hover:text-gray-600'
+                }`}
+              >
+                {lang === 'ar' ? tab.labelAr : tab.labelEn}
+              </button>
+            ))}
+          </div>
+
+          <AnimatePresence mode="wait">
+            {/* ── Dining ── */}
+            {activeTab === 'dining' && (
+              <motion.div
+                key="dining"
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -18 }}
+                transition={{ duration: 0.35 }}
+                className="grid grid-cols-1 lg:grid-cols-4 gap-10 items-start"
+              >
+                <div className="lg:col-span-1">
+                  <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+                    {lang === 'ar' ? 'المطاعم والمقاهي' : 'Restaurants & Bars'}
+                  </h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">
+                    {lang === 'ar'
+                      ? 'من بار المسبح على الشاطئ إلى العشاء الفاخر تحت النجوم، يقدم غراند بيتش رحلة طهي بين النكهات الكويتية والعالمية.'
+                      : 'From our beachfront pool bar to elegant dining under the stars, Grande Beach offers a culinary journey through Kuwaiti and international flavours.'}
+                  </p>
+                </div>
+                <div ref={diningRef} className="lg:col-span-3 flex gap-5 overflow-x-auto pb-1 scroll-smooth snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
+                  {TAB_ITEMS.dining.map(({ nameEn, nameAr, descEn, descAr, img, imgs, detailEn, detailAr }, i) => (
+                    <motion.div
+                      key={nameEn}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.07 }}
+                      className="flex-shrink-0 w-[265px] snap-start"
+                    >
+                      <div className="rounded-2xl overflow-hidden mb-3 aspect-[4/3] bg-gray-100">
+                        <img src={img} alt={lang === 'ar' ? nameAr : nameEn} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                      </div>
+                      <h4 className="font-bold text-gray-900 text-sm mb-1">{lang === 'ar' ? nameAr : nameEn}</h4>
+                      <p className="text-gray-500 text-xs leading-relaxed line-clamp-2">{lang === 'ar' ? descAr : descEn}</p>
+                      <button
+                        type="button"
+                        onClick={() => { setModalCard({ nameEn, nameAr, descEn, descAr, img, imgs, detailEn, detailAr, mt: false }); setModalPhotoIdx(0); }}
+                        className="text-[11px] text-gray-700 underline underline-offset-2 mt-1.5 inline-block hover:text-gold-600 transition-colors"
+                      >
+                        {lang === 'ar' ? 'عرض المزيد' : 'See More'}
+                      </button>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* ── Activities ── */}
+            {activeTab === 'activities' && (
+              <motion.div
+                key="activities"
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -18 }}
+                transition={{ duration: 0.35 }}
+                className="grid grid-cols-1 lg:grid-cols-4 gap-10 items-start"
+              >
+                <div className="lg:col-span-1">
+                  <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+                    {lang === 'ar' ? 'أنشطة المنتجع' : 'Resort Activities'}
+                  </h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">
+                    {lang === 'ar'
+                      ? 'من الرياضات المائية على الخليج إلى الاسترخاء بجانب المسبح وكرة الشاطئ — كل لحظة في غراند بيتش لا تُنسى.'
+                      : 'Dive into endless adventures — from water sports on the Gulf to poolside relaxation and beach volleyball. Every moment is unforgettable.'}
+                  </p>
+                </div>
+                <div ref={activitiesRef} className="lg:col-span-3 flex gap-5 overflow-x-auto pb-1 scroll-smooth snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
+                  {TAB_ITEMS.activities.map(({ nameEn, nameAr, descEn, descAr, img, imgs, detailEn, detailAr }, i) => (
+                    <motion.div
+                      key={nameEn}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.07 }}
+                      className="flex-shrink-0 w-[265px] snap-start"
+                    >
+                      <div className="rounded-2xl overflow-hidden mb-3 aspect-[4/3] bg-gray-100">
+                        <img src={img} alt={lang === 'ar' ? nameAr : nameEn} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                      </div>
+                      <h4 className="font-bold text-gray-900 text-sm mb-1">{lang === 'ar' ? nameAr : nameEn}</h4>
+                      <p className="text-gray-500 text-xs leading-relaxed line-clamp-2">{lang === 'ar' ? descAr : descEn}</p>
+                      <button
+                        type="button"
+                        onClick={() => { setModalCard({ nameEn, nameAr, descEn, descAr, img, imgs, detailEn, detailAr, mt: false }); setModalPhotoIdx(0); }}
+                        className="text-[11px] text-gray-700 underline underline-offset-2 mt-1.5 inline-block hover:text-gold-600 transition-colors"
+                      >
+                        {lang === 'ar' ? 'عرض المزيد' : 'See More'}
+                      </button>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* ── Kuwait ── */}
+            {activeTab === 'kuwait' && (
+              <motion.div
+                key="kuwait"
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -18 }}
+                transition={{ duration: 0.35 }}
+                className="grid grid-cols-1 lg:grid-cols-4 gap-10 items-start"
+              >
+                <div className="lg:col-span-1">
+                  <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+                    {lang === 'ar' ? 'استكشف الكويت' : 'Explore Kuwait'}
+                  </h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">
+                    {lang === 'ar'
+                      ? 'على بُعد قيادة قصيرة من غراند بيتش، تستقبلك الكويت العاصمة بمعالمها الشهيرة وأسواقها التقليدية وثقافتها الأصيلة.'
+                      : "Just a short drive from Grande Beach, Kuwait City is a vibrant metropolis where ancient heritage meets ultra-modern skylines. Discover souqs, towers and culture."}
+                  </p>
+                </div>
+                <div ref={kuwaitRef} className="lg:col-span-3 flex gap-5 overflow-x-auto pb-1 scroll-smooth snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
+                  {TAB_ITEMS.kuwait.map(({ nameEn, nameAr, descEn, descAr, img, imgs, detailEn, detailAr }, i) => (
+                    <motion.div
+                      key={nameEn}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.07 }}
+                      className="flex-shrink-0 w-[265px] snap-start"
+                    >
+                      <div className="rounded-2xl overflow-hidden mb-3 aspect-[4/3] bg-gray-100">
+                        <img src={img} alt={lang === 'ar' ? nameAr : nameEn} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                      </div>
+                      <h4 className="font-bold text-gray-900 text-sm mb-1">{lang === 'ar' ? nameAr : nameEn}</h4>
+                      <p className="text-gray-500 text-xs leading-relaxed line-clamp-2">{lang === 'ar' ? descAr : descEn}</p>
+                      <button
+                        type="button"
+                        onClick={() => { setModalCard({ nameEn, nameAr, descEn, descAr, img, imgs, detailEn, detailAr, mt: false }); setModalPhotoIdx(0); }}
+                        className="text-[11px] text-gray-700 underline underline-offset-2 mt-1.5 inline-block hover:text-gold-600 transition-colors"
+                      >
+                        {lang === 'ar' ? 'عرض المزيد' : 'See More'}
+                      </button>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Scroll arrows */}
+          <div className="flex items-center justify-center gap-3 mt-6">
+            <button
+              type="button"
+              onClick={() => scrollTab('left')}
+              className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-gray-900 hover:text-gray-900 transition-all"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollTab('right')}
+              className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-gray-900 hover:text-gray-900 transition-all"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Why choose us */}
+      <section data-aos="fade-up" className="bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">{t('home.why_title')}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map(({ icon: Icon, title, desc }) => (
+              <div key={title.en} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm text-center hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+                <div className="w-12 h-12 rounded-xl bg-gold-50 flex items-center justify-center mx-auto mb-4">
+                  <Icon className="text-gold-500" size={22} />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2">{title[lang]}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">{desc[lang]}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Signature Quote ── */}
+      <section className="relative py-28 overflow-hidden flex items-center justify-center">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('${p46}')` }}
+        />
+        <div className="absolute inset-0 bg-white/82" />
+        <motion.div
+          className="relative max-w-5xl mx-auto px-8 sm:px-16 text-center"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 1.2, ease: 'easeOut' }}
+        >
+          <p className="text-8xl text-gray-200 font-serif leading-none select-none -mb-4">"</p>
+          <p className="text-3xl sm:text-4xl lg:text-5xl font-serif italic text-gray-800 leading-[1.4]">
+            {lang === 'ar'
+              ? 'حيث تلتقي المياه الفيروزية للخليج العربي بدفء الضيافة الكويتية — كل إقامة تصبح ذكرى لا تُنسى إلى الأبد.'
+              : 'Where the turquoise waters of the Arabian Gulf meet the warmth of Kuwaiti hospitality — every stay becomes a memory to treasure forever.'}
+          </p>
+          <p className="text-8xl text-gray-200 font-serif leading-none select-none -mt-6 text-end">"</p>
+          <div className="flex items-center justify-center gap-4 -mt-2">
+            <div className="h-px w-14 bg-gray-300" />
+            <p className="text-[11px] font-bold tracking-[0.25em] uppercase text-gray-500">
+              Grande Beach · Khairan, Kuwait
+            </p>
+            <div className="h-px w-14 bg-gray-300" />
+          </div>
+        </motion.div>
+      </section>
+
+      {/* ── Guest Reviews ── */}
+      {homeReviews.length > 0 && (
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              className="flex items-end justify-between mb-10"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <div>
+                <p className="text-xs font-bold tracking-[0.2em] uppercase text-gold-600 mb-2">
+                  {lang === 'ar' ? 'ما يقوله ضيوفنا' : 'What Our Guests Say'}
+                </p>
+                <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
+                  {lang === 'ar' ? 'آراء الضيوف' : 'Guest Reviews'}
+                </h2>
+              </div>
+              <Link
+                to="/reviews"
+                className="text-sm font-medium text-gold-600 hover:text-gold-700 underline underline-offset-4 hidden sm:block"
+              >
+                {lang === 'ar' ? 'عرض الكل' : 'View all reviews'}
+              </Link>
+            </motion.div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {homeReviews.map((r, i) => {
+                const chalet = chalets.find(
+                  (c) => c.id === r.chaletId || c.name.en.toLowerCase() === r.chaletName?.toLowerCase()
+                );
+                const img = chalet?.images?.[0] ?? localImagesForChalet(r.chaletName ?? '')[0];
+                const chaletDisplayName = chalet
+                  ? (lang === 'ar' ? chalet.name.ar : chalet.name.en)
+                  : r.chaletName;
+                const typeLabel = chalet
+                  ? chalet.type === 'vip' ? 'VIP'
+                    : chalet.type === 'superior' ? (lang === 'ar' ? 'سوبيريور' : 'Superior')
+                    : (lang === 'ar' ? 'عادي' : 'Standard')
+                  : null;
+                const typeCls = chalet
+                  ? chalet.type === 'vip' ? 'bg-gold-50 text-gold-700'
+                    : chalet.type === 'superior' ? 'bg-purple-50 text-purple-700'
+                    : 'bg-blue-50 text-blue-700'
+                  : '';
+                const avatarColors = ['bg-blue-100 text-blue-700','bg-emerald-100 text-emerald-700','bg-gold-100 text-gold-700','bg-purple-100 text-purple-700','bg-rose-100 text-rose-700'];
+                const avatarCls = avatarColors[r.guestName.charCodeAt(0) % avatarColors.length];
+
+                return (
+                  <motion.div
+                    key={r.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: i * 0.08 }}
+                    className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md hover:-translate-y-1 transition-all duration-300"
+                  >
+                    {/* Chalet image */}
+                    {img && (
+                      <div className="relative h-40 overflow-hidden">
+                        <img src={img} alt={chaletDisplayName} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                        <div className="absolute bottom-2 left-3 right-3 flex items-end justify-between">
+                          <span className="text-white text-xs font-semibold drop-shadow truncate max-w-[160px]">
+                            {chaletDisplayName}
+                          </span>
+                          {typeLabel && (
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${typeCls}`}>
+                              {typeLabel}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="p-4">
+                      <Quote size={18} className="text-gold-300 mb-2" />
+                      <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 mb-4">
+                        {r.comment || (lang === 'ar' ? 'تجربة رائعة لا تُنسى.' : 'An unforgettable experience.')}
+                      </p>
+
+                      <div className="flex items-center gap-0.5 mb-3">
+                        {[1,2,3,4,5].map((s) => (
+                          <Star key={s} size={13} className={s <= r.rating ? 'text-amber-400 fill-amber-400' : 'text-gray-200 fill-gray-200'} />
+                        ))}
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${avatarCls}`}>
+                            {r.guestName.charAt(0).toUpperCase()}
+                          </div>
+                          <span className="text-sm font-medium text-gray-800">{r.guestName}</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-[11px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-lg">
+                          <CheckCircle size={10} />
+                          <span>{lang === 'ar' ? 'موثّق' : 'Verified'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            <div className="text-center mt-8 sm:hidden">
+              <Link to="/reviews">
+                <Button variant="outline">{lang === 'ar' ? 'عرض جميع التقييمات' : 'View All Reviews'}</Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* CTA banner */}
+      <section data-aos="fade-up" className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto bg-navy-800 rounded-3xl overflow-hidden relative text-center py-16 px-8">
+          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&q=60')", backgroundSize: 'cover' }} />
+          <div className="relative">
+            <h2 className="text-3xl font-bold text-white mb-4">{t('home.cta_title')}</h2>
+            <p className="text-navy-200 mb-8 text-lg">{t('home.cta_subtitle')}</p>
+            <Link to="/chalets">
+              <Button size="lg">{t('home.cta_btn')}</Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Card Detail Modal ── */}
+      <AnimatePresence>
+        {modalCard && (
+          <motion.div
+            key="card-modal"
+            className="fixed inset-0 z-[400] flex items-center justify-center px-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setModalCard(null)}
+          >
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 24 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 24 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+              className="relative bg-white rounded-3xl overflow-hidden max-w-sm w-full shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Photo gallery */}
+              <div className="relative h-[230px] bg-gray-900">
+                <img
+                  src={modalCard.imgs[modalPhotoIdx]}
+                  alt={lang === 'ar' ? modalCard.nameAr : modalCard.nameEn}
+                  className="w-full h-full object-cover transition-opacity duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+
+                {/* Close */}
+                <button
+                  type="button"
+                  onClick={() => setModalCard(null)}
+                  className="absolute top-3 right-3 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow transition-colors"
+                >
+                  <X size={15} className="text-gray-700" />
+                </button>
+
+                {/* Prev photo */}
+                <button
+                  type="button"
+                  onClick={() => setModalPhotoIdx((p) => (p - 1 + modalCard.imgs.length) % modalCard.imgs.length)}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow transition-colors"
+                >
+                  <ChevronLeft size={15} className="text-gray-700" />
+                </button>
+
+                {/* Next photo */}
+                <button
+                  type="button"
+                  onClick={() => setModalPhotoIdx((p) => (p + 1) % modalCard.imgs.length)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow transition-colors"
+                >
+                  <ChevronRight size={15} className="text-gray-700" />
+                </button>
+
+                {/* Dot indicators */}
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  {modalCard.imgs.map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setModalPhotoIdx(i)}
+                      className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${i === modalPhotoIdx ? 'bg-white scale-125' : 'bg-white/50'}`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="p-6 max-h-[55vh] overflow-y-auto">
+                <h3 className="text-xl font-bold text-gray-900 mb-1">
+                  {lang === 'ar' ? modalCard.nameAr : modalCard.nameEn}
+                </h3>
+                <div className="w-8 h-[2px] bg-gold-400 mb-4" />
+                <p className="text-gray-500 text-sm leading-relaxed">
+                  {lang === 'ar' ? modalCard.detailAr : modalCard.detailEn}
+                </p>
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 pb-5">
+                <button
+                  type="button"
+                  onClick={() => setModalCard(null)}
+                  className="w-full h-10 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:border-gray-400 transition-colors"
+                >
+                  {lang === 'ar' ? 'إغلاق' : 'Close'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {requestChalet && (
+        <RequestModal
+          isOpen={!!requestChalet}
+          onClose={() => setRequestChalet(null)}
+          chaletId={requestChalet.id}
+          chaletName={requestChalet.name}
+        />
+      )}
+    </div>
+  );
+}

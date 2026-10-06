@@ -1,6 +1,6 @@
 node_modules/
 dist/
-grande-frontend/
+#grande-frontend/
 .DS_Store
 *.local
 .claude/
