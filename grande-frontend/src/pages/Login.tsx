@@ -4,11 +4,27 @@ import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { useAppSelector } from '../hooks/useAppSelector';
-import { loginWithAPI, clearError } from '../store/slices/authSlice';
+import { loginWithAPI, googleLoginWithAPI, clearError } from '../store/slices/authSlice';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
+
+function GoogleButton({ onToken }: { onToken: (t: string) => void }) {
+  return (
+    <div className="mb-5">
+      <GoogleLogin
+        onSuccess={(res) => { if (res.credential) onToken(res.credential); }}
+        onError={() => {}}
+        width={400}
+        text="signin_with"
+        shape="rectangular"
+        logo_alignment="center"
+      />
+    </div>
+  );
+}
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -40,6 +56,10 @@ export function Login() {
     dispatch(loginWithAPI({email:data.email, password:data.password}) as unknown as Parameters<typeof dispatch>[0]);
   }
 
+  function handleGoogleToken(token: string) {
+    dispatch(googleLoginWithAPI(token) as unknown as Parameters<typeof dispatch>[0]);
+  }
+
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
@@ -62,6 +82,12 @@ export function Login() {
               {error}
             </div>
           )}
+
+          <GoogleButton onToken={handleGoogleToken} />
+          <div className="relative mb-5">
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-100" /></div>
+            <div className="relative flex justify-center text-xs"><span className="bg-white px-3 text-gray-400">{t('auth.or')}</span></div>
+          </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <Input

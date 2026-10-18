@@ -324,6 +324,49 @@ export async function tryRefreshToken(): Promise<string | null> {
   }
 }
 
+// ─── GOOGLE LOGIN THUNK ──────────────────────────────────────────────────────
+// POST /api/Auth/google-login
+export function googleLoginWithAPI(idToken: string) {
+  return async (dispatch: (a: PayloadAction<User | string | undefined>) => void) => {
+    dispatch(authSlice.actions.loginStart());
+    try {
+      const response = await fetch(`${API_BASE}/api/Auth/google-login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken }),
+      });
+      const result = await safeJson(response) as Partial<AuthApiResponse>;
+      if (!response.ok || !result.success) {
+        const errorMsg = result.errors?.join(', ') || result.message || 'Google login failed';
+        dispatch(authSlice.actions.loginFailure(errorMsg));
+        return;
+      }
+      localStorage.setItem('access_token', result.data!.accessToken);
+      localStorage.setItem('refresh_token', result.data!.refreshToken);
+      const user = mapApiUserToUser(result.data!.user, result.data!.user.preferredLanguage);
+      dispatch(authSlice.actions.loginSuccess(user));
+    } catch {
+      dispatch(authSlice.actions.loginFailure('Google login failed. Please try again.'));
+    }
+  };
+}
+
+// ─── DELETE ACCOUNT THUNK ────────────────────────────────────────────────────
+// DELETE /api/Auth/account
+export async function deleteAccount(): Promise<{ success: boolean; message?: string }> {
+  try {
+    const token = localStorage.getItem('access_token');
+    const response = await fetch(`${API_BASE}/api/Auth/account`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    });
+    const result = await safeJson(response) as { success?: boolean; message?: string };
+    return { success: response.ok && Boolean(result.success), message: result.message };
+  } catch {
+    return { success: false, message: 'Account deletion failed. Please try again.' };
+  }
+}
+
 export function fetchProfile() {
   return async (dispatch: (a: ReturnType<typeof authSlice.actions.loginSuccess | typeof authSlice.actions.loginFailure>) => void) => {
     let token = localStorage.getItem('access_token');

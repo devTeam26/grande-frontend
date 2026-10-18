@@ -4,12 +4,27 @@ import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { useAppSelector } from '../hooks/useAppSelector';
-// ── registerWithAPI replaces the old fake loginSuccess call ─────────────────
-import { registerWithAPI, clearError } from '../store/slices/authSlice';
+import { registerWithAPI, googleLoginWithAPI, clearError } from '../store/slices/authSlice';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
+
+function GoogleButton({ onToken }: { onToken: (t: string) => void }) {
+  return (
+    <div className="mb-5">
+      <GoogleLogin
+        onSuccess={(res) => { if (res.credential) onToken(res.credential); }}
+        onError={() => {}}
+        width={400}
+        text="signup_with"
+        shape="rectangular"
+        logo_alignment="center"
+      />
+    </div>
+  );
+}
 
 const registerSchema = z.object({
   firstName: z.string().min(2),
@@ -37,6 +52,10 @@ export function Register() {
     if (isAuthenticated) navigate('/');
     return () => { dispatch(clearError()); };
   }, [isAuthenticated, navigate, dispatch]);
+
+  function handleGoogleToken(token: string) {
+    dispatch(googleLoginWithAPI(token) as unknown as Parameters<typeof dispatch>[0]);
+  }
 
   function onSubmit(data: RegisterForm) {
     // ── REAL API CALL ────────────────────────────────────────────────────────
@@ -66,6 +85,12 @@ export function Register() {
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-7">
+          <GoogleButton onToken={handleGoogleToken} />
+          <div className="relative mb-5">
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-100" /></div>
+            <div className="relative flex justify-center text-xs"><span className="bg-white px-3 text-gray-400">{t('auth.or')}</span></div>
+          </div>
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <Input label={t('auth.first_name')} {...register('firstName')} error={errors.firstName?.message} />

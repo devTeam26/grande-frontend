@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { format, parseISO } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { Award, Calendar, Pencil, X, Lock, Hash } from 'lucide-react';
+import { Award, Calendar, Pencil, X, Lock, Hash, Trash2, AlertTriangle } from 'lucide-react';
 import { useAppSelector } from '../hooks/useAppSelector';
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { fetchMyBookings } from '../store/slices/bookingSlice';
-import { fetchProfile, updateProfile, changePassword } from '../store/slices/authSlice';
+import { fetchProfile, updateProfile, changePassword, deleteAccount, logout } from '../store/slices/authSlice';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
@@ -34,6 +34,9 @@ export function Profile() {
   const [currentPw, setCurrentPw] = useState('');
   const [newPw, setNewPw] = useState('');
   const [confirmPw, setConfirmPw] = useState('');
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     // fetchProfile runs first so its token refresh completes before fetchMyBookings fires.
@@ -53,6 +56,17 @@ export function Profile() {
       setPhone(user.phoneNumber);
     }
   }, [user?.id]);
+
+  async function handleDeleteAccount() {
+    setDeleting(true);
+    const result = await deleteAccount();
+    setDeleting(false);
+    if (result.success) {
+      dispatch(logout());
+    } else {
+      toast.error(result.message || (lang === 'ar' ? 'فشل حذف الحساب' : 'Failed to delete account'));
+    }
+  }
 
   if (!isAuthenticated || !user) return <Navigate to="/login" replace />;
 
@@ -282,6 +296,69 @@ export function Profile() {
           )}
         </div>
       </div>
+
+      {/* Danger Zone */}
+      <div className="mt-8 border border-red-100 rounded-2xl p-6 bg-red-50/40">
+        <div className="flex items-center gap-2 mb-1">
+          <AlertTriangle size={16} className="text-red-500" />
+          <h3 className="font-semibold text-red-700 text-sm">{lang === 'ar' ? 'منطقة الخطر' : 'Danger Zone'}</h3>
+        </div>
+        <p className="text-xs text-red-500 mb-4">
+          {lang === 'ar' ? 'حذف حسابك نهائي ولا يمكن التراجع عنه.' : 'Deleting your account is permanent and cannot be undone.'}
+        </p>
+        <button
+          type="button"
+          onClick={() => setDeleteOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl border border-red-200 text-red-600 text-sm font-medium hover:bg-red-100 transition-colors"
+        >
+          <Trash2 size={14} />
+          {lang === 'ar' ? 'حذف حسابي' : 'Delete My Account'}
+        </button>
+      </div>
+
+      {/* Delete Account Modal */}
+      {deleteOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="p-2.5 rounded-xl bg-red-50 flex-shrink-0">
+                <AlertTriangle size={20} className="text-red-500" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">{lang === 'ar' ? 'تأكيد حذف الحساب' : 'Confirm Account Deletion'}</h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  {lang === 'ar'
+                    ? 'سيتم حذف جميع بياناتك وحجوزاتك نهائياً. اكتب "DELETE" للتأكيد.'
+                    : 'All your data and bookings will be permanently deleted. Type "DELETE" to confirm.'}
+                </p>
+              </div>
+            </div>
+            <input
+              type="text"
+              value={deleteConfirmText}
+              onChange={(e) => setDeleteConfirmText(e.target.value)}
+              placeholder='Type "DELETE" to confirm'
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setDeleteOpen(false); setDeleteConfirmText(''); }}
+                className="flex-1 px-4 py-2.5 text-sm rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                {lang === 'ar' ? 'إلغاء' : 'Cancel'}
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deleteConfirmText !== 'DELETE' || deleting}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm rounded-xl bg-red-500 text-white hover:bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-medium"
+              >
+                {deleting ? <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Trash2 size={14} />}
+                {lang === 'ar' ? 'حذف نهائي' : 'Delete Permanently'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
