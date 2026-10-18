@@ -195,7 +195,10 @@ const TAB_ITEMS: Record<'dining' | 'activities' | 'kuwait', TabCard[]> = {
   ],
 };
 
-// Replace each URL below with your actual CDN photo URLs (3 photos per card for the modal carousel)
+// Facility photos live in public/facilities/<key>/1.jpg … N.jpg
+const facilityPhotos = (key: string, count: number) =>
+  Array.from({ length: count }, (_, i) => `/facilities/${key}/${i + 1}.jpg`);
+
 const FACILITY_AREAS: (TabCard & { key: string })[] = [
   {
     key: 'indoor',
@@ -204,8 +207,8 @@ const FACILITY_AREAS: (TabCard & { key: string })[] = [
     descAr: 'مساحات معيشة مزينة بأناقة وغرف نوم رئيسية ومطابخ مجهزة بالكامل صممت للراحة.',
     detailEn: 'Our indoor spaces blend contemporary design with Kuwaiti warmth — from handpicked furnishings and ambient lighting to king-sized beds dressed in Egyptian cotton and professional-grade kitchen appliances.',
     detailAr: 'تجمع مساحاتنا الداخلية بين التصميم المعاصر ودفء الضيافة الكويتية — من الأثاث المختار بعناية والإضاءة المحيطة إلى أسرة كينج مغطاة بالقطن المصري والأجهزة المطبخية الاحترافية.',
-    img: 'https://cdn.grandebeach.com/facilities/indoor/1.jpg',
-    imgs: ['https://cdn.grandebeach.com/facilities/indoor/1.jpg', 'https://cdn.grandebeach.com/facilities/indoor/2.jpg', 'https://cdn.grandebeach.com/facilities/indoor/3.jpg'],
+    img: '/facilities/indoor/1.jpg',
+    imgs: facilityPhotos('indoor', 6),
   },
   {
     key: 'kids',
@@ -214,8 +217,8 @@ const FACILITY_AREAS: (TabCard & { key: string })[] = [
     descAr: 'منطقة آمنة ومليئة بالمرح مع مسبح ضحل وملاعب خارجية وغرفة ألعاب داخلية.',
     detailEn: 'Dedicated entirely to younger guests — our kids area features a heated shallow pool with colourful floats, a rubber-cushioned outdoor play zone with slides and swings, and an indoor game room with console and table games. All supervised daily.',
     detailAr: 'مخصصة بالكامل للضيوف الصغار — تضم منطقة الأطفال مسبحاً ضحلاً مدفأً مع عوامات ملونة وملعب خارجي مطاطي مع زحاليق وأراجيح وغرفة ألعاب داخلية. مع الإشراف اليومي.',
-    img: 'https://cdn.grandebeach.com/facilities/kids/1.jpg',
-    imgs: ['https://cdn.grandebeach.com/facilities/kids/1.jpg', 'https://cdn.grandebeach.com/facilities/kids/2.jpg', 'https://cdn.grandebeach.com/facilities/kids/3.jpg'],
+    img: '/facilities/kids/1.jpg',
+    imgs: facilityPhotos('kids', 29),
   },
   {
     key: 'reception',
@@ -224,8 +227,8 @@ const FACILITY_AREAS: (TabCard & { key: string })[] = [
     descAr: 'بهو فخم وتسجيل وصول سريع وشخصي وصالة ترحيب مطلة على الخليج.',
     detailEn: 'Step into soaring ceilings, marble floors and a centrepiece that frames the Gulf view. Our concierge team is on hand 24/7 — digital pre-registration means most guests are in their chalet within minutes of arrival.',
     detailAr: 'ادخل إلى أسقف شامخة وأرضيات رخامية وتحفة تؤطر إطلالة الخليج. فريق الكونسيرج متاح 24/7 — التسجيل الرقمي المسبق يعني أن معظم الضيوف يصلون شاليههم في دقائق.',
-    img: 'https://cdn.grandebeach.com/facilities/reception/1.jpg',
-    imgs: ['https://cdn.grandebeach.com/facilities/reception/1.jpg', 'https://cdn.grandebeach.com/facilities/reception/2.jpg', 'https://cdn.grandebeach.com/facilities/reception/3.jpg'],
+    img: '/facilities/reception/1.jpg',
+    imgs: facilityPhotos('reception', 10),
   },
   {
     key: 'outdoor',
@@ -234,8 +237,8 @@ const FACILITY_AREAS: (TabCard & { key: string })[] = [
     descAr: 'شاطئ خاص ومسبح لانهائي وشرفات حديقة خضراء تطل على الخليج العربي.',
     detailEn: 'Over 500 metres of private beachfront with sun loungers and towel service, a heated infinity pool that flows into the Gulf horizon, and beautifully landscaped gardens with shaded pergola walkways.',
     detailAr: 'أكثر من 500 متر من الشاطئ الخاص مع كراسي الشمس وخدمة المناشف، ومسبح لانهائي مدفأ يتدفق نحو أفق الخليج، وحدائق جميلة مع ممرات بيرغولا مظللة.',
-    img: 'https://cdn.grandebeach.com/facilities/outdoor/1.jpg',
-    imgs: ['https://cdn.grandebeach.com/facilities/outdoor/1.jpg', 'https://cdn.grandebeach.com/facilities/outdoor/2.jpg', 'https://cdn.grandebeach.com/facilities/outdoor/3.jpg'],
+    img: '/facilities/outdoor/1.jpg',
+    imgs: facilityPhotos('outdoor', 9),
   },
 ];
 
